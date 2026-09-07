@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!-- PanWatch product application shell. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex,follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>PanWatch</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#EDEEF2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101216" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PanWatch" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="icon" type="image/png" href="/icon-192.png" />
+
+    <!-- Meta -->
+    <meta name="description" content="Research US and Canadian equities with AI agents, review their reasoning, and test ideas in a paper account. Open-source software you can self-host." />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- UI face: one family across the app, tabular figures (index.css) -->
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" /></noscript>
+
+    <!-- Product-only chart code is loaded when entering the application. -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // 注册 Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('SW registered:', reg.scope))
+            .catch((err) => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>

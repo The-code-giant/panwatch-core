@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "panwatch-core"
+version = "0.0.0.dev0"
+description = "Self-hosted PanWatch backend (development export)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = [
+  "apprise>=1.6.0", "openai>=1.0.0", "apscheduler>=3.10.0",
+  "httpx>=0.25.0", "pydantic>=2.0.0", "pydantic-settings>=2.0.0",
+  "pyyaml>=6.0", "certifi", "tenacity>=8.2.0", "fastapi>=0.104.0",
+  "uvicorn>=0.24.0", "sqlalchemy>=2.0.0", "PyJWT>=2.8.0",
+  "yfinance>=1.7,<2", "matplotlib>=3.8", "exchange_calendars>=4.5",
+  "weasyprint>=60", "xhtml2pdf>=0.2.17", "marketdata==0.1.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0.0"]
+deep-analysis = ["tradingagents @ git+https://github.com/TauricResearch/TradingAgents.git@v0.3.0"]
+
+[tool.setuptools]
+py-modules = ["server"]
+include-package-data = false
+license-files = ["LICENSE", "NOTICE"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src", "src.*", "prompts"]
+exclude = ["tests", "tests.*", "packages", "packages.*"]
+
+[tool.setuptools.package-data]
+prompts = ["*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

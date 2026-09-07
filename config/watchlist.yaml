@@ -1,0 +1,20 @@
+markets:
+  - code: US
+    stocks:
+      - symbol: "AAPL"
+        name: "Apple"
+        # cost_price: 180.00
+        # quantity: 10
+      - symbol: "NVDA"
+        name: "NVIDIA"
+      - symbol: "MSFT"
+        name: "Microsoft"
+
+  - code: CA
+    stocks:
+      - symbol: "SHOP.TO"
+        name: "Shopify"
+      - symbol: "RY.TO"
+        name: "Royal Bank of Canada"
+      - symbol: "TD.TO"
+        name: "Toronto-Dominion Bank"

@@ -1,0 +1,26 @@
+services:
+  panwatch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: panwatch-core:local
+    restart: unless-stopped
+    ports:
+      # Non-default host port to avoid colliding with a typical existing PanWatch
+      # install (which may already publish 8000). Override with the PANWATCH_PORT
+      # env var, e.g. `PANWATCH_PORT=18081 docker compose up -d`.
+      - "127.0.0.1:${PANWATCH_PORT:-18080}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: America/Vancouver
+      DATA_DIR: /app/data
+      DISABLE_SCHEDULERS: ${DISABLE_SCHEDULERS:-1}
+      UPDATE_CHECK_DISABLE: "1"
+    volumes:
+      - panwatch_data:/app/data
+
+volumes:
+  panwatch_data:
+    # Compose prefixes this managed volume with the selected project name.

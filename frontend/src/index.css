@@ -1,0 +1,400 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * "Bright Desk" — a lit analyst's room, not a dark terminal.
+   *
+   * Warm light-gray room, white instruments, one dark console rail carrying
+   * navigation, and ONE lime that means "the user's action or the user's
+   * current selection" and nothing else. Market direction (green up / red
+   * down, the Western convention) and the four market identity hues are
+   * separate systems that lime never borrows from and never sits inside.
+   */
+  :root {
+    /* room + instruments */
+    --background: 228 14% 94%;      /* #EDEEF2 the room */
+    --foreground: 228 17% 9%;       /* #14161C ink */
+    --card: 0 0% 100%;              /* white instrument face */
+    --card-foreground: 228 17% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 17% 9%;
+
+    /* the dark console rail (nav, hero tile) */
+    --rail: 223 19% 11%;            /* #171A22 */
+    --rail-2: 224 18% 15%;          /* #20242E raised surface on the rail */
+    --rail-foreground: 0 0% 100%;
+    --rail-muted: 220 12% 72%;      /* #AEB4C2 legible on the rail */
+
+    /* the one accent: the user's action and the user's selection */
+    --primary: 76 86% 63%;          /* #C8F24E lime */
+    --primary-foreground: 80 65% 9%;/* #1B2408 ink that sits on lime */
+    --primary-deep: 76 68% 50%;     /* #A8D42A focus rings, chart strokes */
+
+    --secondary: 228 14% 94%;
+    --secondary-foreground: 223 12% 33%;
+    --muted: 228 14% 94%;
+    --muted-foreground: 223 12% 40%;  /* #5A6172 */
+    --accent: 228 14% 94%;
+    --accent-foreground: 228 17% 9%;
+
+    --destructive: 355 68% 51%;     /* #DC2B3A error */
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 76% 30%;         /* #12855C confirmed */
+    --success-foreground: 0 0% 100%;
+
+    /* market direction — the Western convention: green rises, red falls.
+       A factual/regional rule, not brand palette. Never reused for state. */
+    --stock-up: 160 76% 30%;        /* #12855C the mark */
+    --stock-down: 355 68% 51%;      /* #DC2B3A the mark */
+    --stock-up-ink: 160 80% 22%;    /* deeper, for small text on a tint */
+    --stock-down-ink: 355 72% 40%;
+
+    --border: 227 17% 91%;          /* #E4E6EC hairline */
+    --input: 227 17% 91%;
+    --ring: 76 68% 50%;
+
+    --radius: 0.75rem;              /* controls */
+    --radius-card: 1.125rem;        /* 18px instrument face */
+    --radius-rail: 1.375rem;        /* 22px the console rail */
+
+    /* Market identity. These four were validated as CHART MARKS against the
+       surface (colour-vision deficiency separation + >=3:1 vs the ground) with
+       the dataviz validator. That check does not cover text ON them, so a
+       filled badge uses the --mkt-*-solid set below, which is contrast-checked
+       for its own label. Identity only: never means up, down, good, or bad. */
+    --mkt-us: 258 90% 66%;          /* #8B5CF6 */
+    --mkt-ca: 174 84% 34%;          /* #0E9F8E */
+    --mkt-crypto: 334 78% 50%;      /* #E11D74 */
+    --mkt-gold: 28 92% 37%;         /* #B45309 */
+
+    /* Filled-badge variants: each passes >=4.5:1 against --mkt-ink.
+       us 6.15 · ca 5.02 · crypto 4.54 · gold 5.02 */
+    --mkt-us-solid: 262 74% 56%;      /* #6D3EE0 */
+    --mkt-ca-solid: 174 85% 26%;      /* #0A7D71 */
+    --mkt-crypto-solid: 334 78% 50%;  /* #E11D74 */
+    --mkt-gold-solid: 28 92% 37%;     /* #B45309 */
+    --mkt-ink: 0 0% 100%;
+
+    /* Stat-tile grounds. A FOURTH, deliberately bounded colour role: these
+       tint the stat strip and nothing else, so they cannot collide with the
+       accent (action), direction (bullish/bearish) or identity (market).
+       The colour labels which metric you are reading. Every tint carries the
+       ordinary ink tokens at >=13:1 for the value and >=6:1 for the label. */
+    --tile-mint: 152 61% 88%;       /* #CFF3E1 */
+    --tile-lilac: 256 74% 92%;      /* #E3DCFB */
+    --tile-peach: 28 100% 90%;      /* #FFE3CC */
+    --tile-sky: 205 79% 91%;        /* #D5EAFB */
+
+    --skeleton: 228 14% 94%;
+  }
+
+  .dark {
+    --background: 220 12% 7%;       /* #101216 */
+    --foreground: 225 18% 94%;
+    --card: 222 14% 11%;            /* #191C22 */
+    --card-foreground: 225 18% 94%;
+    --popover: 222 14% 11%;
+    --popover-foreground: 225 18% 94%;
+
+    --rail: 220 17% 5%;             /* #0B0D11 */
+    --rail-2: 224 18% 15%;
+    --rail-foreground: 0 0% 100%;
+    --rail-muted: 220 12% 72%;
+
+    --primary: 76 86% 63%;
+    --primary-foreground: 80 65% 9%;
+    --primary-deep: 76 80% 58%;
+
+    --secondary: 223 14% 16%;
+    --secondary-foreground: 220 15% 76%;
+    --muted: 223 14% 16%;
+    --muted-foreground: 220 13% 68%;
+    --accent: 223 14% 16%;
+    --accent-foreground: 225 18% 94%;
+
+    --destructive: 356 100% 68%;    /* #FF5A65 */
+    --destructive-foreground: 220 20% 8%;
+    --success: 155 61% 46%;         /* #2FBF83 */
+    --success-foreground: 220 20% 8%;
+
+    --stock-up: 155 61% 46%;        /* #2FBF83 */
+    --stock-down: 356 100% 68%;     /* #FF5A65 */
+    --stock-up-ink: 155 61% 56%;
+    --stock-down-ink: 356 100% 74%;
+
+    --border: 222 14% 18%;          /* #272B34 */
+    --input: 222 14% 18%;
+    --ring: 76 80% 58%;
+
+    --mkt-us: 258 78% 71%;          /* #9B7BF0 */
+    --mkt-ca: 174 76% 37%;          /* #17A697 */
+    --mkt-crypto: 337 74% 59%;      /* #E24A86 */
+    --mkt-gold: 32 74% 45%;         /* #C97A1E */
+
+    /* On the dark ground the hues are light, so the badge label goes dark.
+       us 5.84 · ca 6.24 · crypto 5.00 · gold 5.66 */
+    --mkt-us-solid: 258 78% 71%;
+    --mkt-ca-solid: 174 76% 37%;
+    --mkt-crypto-solid: 337 74% 59%;
+    --mkt-gold-solid: 32 74% 45%;
+    --mkt-ink: 220 15% 7%;
+
+    /* The same four roles, stepped for the dark ground. */
+    --tile-mint: 156 39% 12%;       /* #12291F */
+    --tile-lilac: 254 39% 16%;      /* #1E1938 */
+    --tile-peach: 26 49% 12%;       /* #2E1E10 */
+    --tile-sky: 209 45% 13%;        /* #12212F */
+
+    --skeleton: 223 14% 16%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply text-foreground antialiased bg-background;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+    min-height: 100vh;
+  }
+  code, .font-mono {
+    font-family: "SF Mono", "Cascadia Code", "Source Code Pro", ui-monospace, monospace;
+  }
+  /* Keyboard focus. The app shipped with no authored focus state at all, so
+     a UA ring on the lime active nav item was invisible. One ring, drawn
+     outside the element so it survives on lime, dark rail and white alike. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  .dark :focus-visible {
+    outline-color: hsl(var(--primary));
+  }
+
+  /* Every price, quantity and percentage sets in tabular figures so live
+     updates never shift the column. */
+  .tabular-nums, .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ------------------------------------------------------------------
+   * Surfaces. One elevation, declared once: a white face on the room,
+   * carrying a soft OFFSET shadow (never a glow, never border+wide-shadow).
+   * ------------------------------------------------------------------ */
+  .card {
+    @apply bg-card rounded-[--radius-card];
+    box-shadow: 0 1px 2px hsl(228 17% 9% / 0.05), 0 8px 24px -14px hsl(228 17% 9% / 0.22);
+  }
+  .dark .card {
+    box-shadow: 0 1px 2px hsl(0 0% 0% / 0.4), 0 10px 28px -16px hsl(0 0% 0% / 0.7);
+  }
+  /* A card the whole of which is a link/button. Tints, never lifts. */
+  .card-interactive {
+    @apply card transition-colors duration-150 cursor-pointer hover:bg-muted/40;
+  }
+  /* The dark console: the rail. On the light room its own darkness is the
+     edge. On the dark ground rail and room are both near-black (1.04:1), so
+     the rail earns a hairline instead of dissolving into the page. */
+  .surface-rail {
+    @apply bg-[hsl(var(--rail))] text-[hsl(var(--rail-foreground))];
+  }
+  .dark .surface-rail {
+    box-shadow: inset 0 0 0 1px hsl(var(--border));
+  }
+  /* The one hero tile that leads a stat row. It must read as RAISED against
+     the room in either theme: on light that means the dark console colour;
+     on dark the console is darker than the card, so the hero steps up to the
+     raised rail tone instead of punching a hole in the row. */
+  .surface-hero {
+    @apply bg-[hsl(var(--rail))] text-[hsl(var(--rail-foreground))];
+    box-shadow: 0 1px 2px hsl(228 17% 9% / 0.06), 0 14px 30px -18px hsl(228 17% 9% / 0.5);
+  }
+  /* A tinted stat tile. Same geometry and shadow as .card; only the ground
+     changes, so the strip still reads as one instrument. */
+  .surface-tile {
+    @apply rounded-card;
+    box-shadow: 0 1px 2px hsl(228 17% 9% / 0.05), 0 8px 24px -14px hsl(228 17% 9% / 0.22);
+  }
+  .dark .surface-tile {
+    box-shadow: 0 1px 2px hsl(0 0% 0% / 0.4), 0 10px 28px -16px hsl(0 0% 0% / 0.7);
+  }
+
+  .dark .surface-hero {
+    @apply bg-[hsl(var(--rail-2))];
+    box-shadow: 0 1px 2px hsl(0 0% 0% / 0.4), 0 10px 28px -16px hsl(0 0% 0% / 0.7);
+  }
+
+  /* ------------------------------------------------------------------
+   * Controls. Pills for actions, 12px radius for inputs and selects.
+   * ------------------------------------------------------------------ */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2
+           text-[13px] font-bold text-primary-foreground transition-colors duration-150
+           hover:bg-[hsl(var(--primary)/0.85)] active:translate-y-px
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-border
+           px-4 py-2 text-[13px] font-semibold transition-colors duration-150
+           hover:bg-muted active:translate-y-px
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  /* Small inline control used inside rows and card headers. */
+  .btn-mini {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5
+           text-[12.5px] font-semibold transition-colors duration-150 hover:bg-muted;
+  }
+  .btn-mini-solid {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[12.5px]
+           font-bold text-primary-foreground transition-colors duration-150
+           hover:bg-[hsl(var(--primary)/0.85)];
+  }
+  .input-field {
+    @apply h-10 w-full rounded-xl border border-border bg-card px-3 text-[13px]
+           placeholder:text-muted-foreground focus:outline-none focus:ring-2
+           focus:ring-[hsl(var(--ring)/0.45)] focus:border-[hsl(var(--ring))]
+           transition-colors duration-150;
+  }
+
+  /* ------------------------------------------------------------------
+   * Type scale. One page title per room, clearly above its panel headers.
+   * No gradient text anywhere: emphasis is weight and size.
+   * ------------------------------------------------------------------ */
+  .page-title {
+    @apply text-[22px] md:text-[26px] font-black tracking-[-0.03em] leading-tight text-foreground;
+  }
+  .page-subtitle {
+    @apply text-[13px] text-muted-foreground leading-normal;
+  }
+  .section-title {
+    @apply text-[15.5px] font-bold tracking-[-0.02em] text-foreground;
+  }
+  .section-sub {
+    @apply text-[12px] font-medium text-muted-foreground;
+  }
+  .group-title {
+    @apply text-[12.5px] font-bold text-foreground;
+  }
+  .stat-label {
+    @apply text-[12.5px] font-medium text-muted-foreground leading-tight;
+  }
+  .stat-value {
+    @apply text-[30px] font-black leading-none tracking-[-0.035em] tabular-nums text-foreground;
+  }
+  .stat-unit {
+    @apply text-[14px] font-bold text-muted-foreground ml-0.5 tracking-normal;
+  }
+  .helper-text {
+    @apply text-[11.5px] text-muted-foreground leading-relaxed;
+  }
+  /* Column head in a dense table. */
+  .col-head {
+    @apply text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground;
+  }
+
+  /* ------------------------------------------------------------------
+   * Chips. Direction chips carry market meaning; verdict chips carry the
+   * agent's recommendation. Neither ever uses the lime.
+   * ------------------------------------------------------------------ */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-bold;
+  }
+  .chip-up {
+    @apply chip bg-[hsl(var(--stock-up)/0.12)] text-[hsl(var(--stock-up-ink))];
+  }
+  .chip-down {
+    @apply chip bg-[hsl(var(--stock-down)/0.12)] text-[hsl(var(--stock-down-ink))];
+  }
+  .chip-neutral {
+    @apply chip bg-muted text-muted-foreground;
+  }
+  .verdict {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold
+           uppercase tracking-[0.04em];
+  }
+
+  /* ------------------------------------------------------------------
+   * Interaction. A row tints. It never lifts, scales, or gains a border.
+   * ------------------------------------------------------------------ */
+  .row-interactive {
+    @apply cursor-pointer transition-colors duration-150 hover:bg-muted/60 active:bg-muted;
+  }
+  .row-hover {
+    @apply transition-colors duration-150 hover:bg-muted/50;
+  }
+
+  /* Loading placeholder shaped like the content it replaces. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-[hsl(var(--skeleton))];
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.06),
+      transparent
+    );
+    animation: skeleton-sweep 1.3s infinite;
+  }
+  @keyframes skeleton-sweep {
+    to { transform: translateX(100%); }
+  }
+}
+
+@layer utilities {
+  /* Live price transition: the value flashes its direction and settles.
+     The colour carries the same meaning the number does. */
+  @keyframes tick-up {
+    0%, 22% { color: hsl(var(--stock-up)); }
+    100% { color: inherit; }
+  }
+  @keyframes tick-down {
+    0%, 22% { color: hsl(var(--stock-down)); }
+    100% { color: inherit; }
+  }
+  .tick-up { animation: tick-up 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .tick-down { animation: tick-down 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tick-up, .tick-down, .skeleton::after { animation: none; }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Scrollbar (opt-in via className="scrollbar") */
+@layer base {
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.35) transparent;
+  }
+  .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.22);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.38);
+  }
+  .scrollbar::-webkit-scrollbar-corner { background: transparent; }
+  .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+}

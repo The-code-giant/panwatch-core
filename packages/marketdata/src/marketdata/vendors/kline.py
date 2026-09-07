@@ -1,0 +1,280 @@
+"""Kline vendors: Tencent (CN/HK/US legacy), Eastmoney (CN/HK legacy) and the raw Yahoo chart v8
+vendor (``yahoo``), which is the documented last resort behind ``YFinanceKlineVendor``
+(``vendors/yfinance.py``). Raw ``query2`` calls answer 429 from some networks, so the
+library path is primary; this module is the only place allowed to hit ``query2`` directly."""
+from __future__ import annotations
+
+import json
+import logging
+from datetime import datetime, timezone
+
+from marketdata.http import market_get
+from marketdata.symbol import Market, Symbol
+from marketdata.types import Bar
+from marketdata.vendors.base import KlineVendor
+from marketdata.vendors.yf_adapter import yahoo_period as _yahoo_range  # days -> Yahoo range enum
+
+logger = logging.getLogger(__name__)
+
+_TENCENT_URL = "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get"
+_EASTMONEY_URL = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+_YAHOO_CHART_URL = "https://query2.finance.yahoo.com/v8/finance/chart/{sym}"
+
+
+def _days(config: dict, default: int = 60) -> int:
+    try:
+        return int(config.get("days") or default)
+    except Exception:
+        return default
+
+
+# 腾讯 fqkline 对 count 有上限:实测 ≤800 正常返(800→801根),1000-2000 退化到 ~641,
+# ≥3000 直接返空(0根)。上层 want 常放大到 3000(为长历史/回测),若原样透传腾讯会返 0
+# → 每个标的都白白落到东财补全 → 东财一挂就没数据。故把请求 count 截到 800(取回最多)。
+_TENCENT_MAX_COUNT = 800
+
+
+def fetch_tencent_kline_raw(tsym: str, days: int) -> list[Bar]:
+    """按**原始腾讯符号**取日K(不经 Symbol 转换)。
+
+    供指数等显式符号场景复用(sh000001/hkHSI/usDJI…;指数与个股的符号规则不同,
+    必须显式传入)。个股路径请走 TencentKlineVendor。
+    """
+    days = min(max(int(days or 1), 1), _TENCENT_MAX_COUNT)
+    text = market_get(
+        _TENCENT_URL, host_key="web.ifzq.gtimg.cn", min_interval_s=0.15,
+        params={"param": f"{tsym},day,,,{days},qfq", "_var": "kline_dayqfq"},
+        timeout=10, retries=2, parse="text", log_label="腾讯K线", symbol=tsym,
+    )
+    if not text or "=" not in text:
+        return []
+    js = text.split("=", 1)[1].strip().rstrip(";")
+    try:
+        data = json.loads(js)
+    except Exception:
+        return []
+    raw = data.get("data", {}) if isinstance(data, dict) else {}
+    day = []
+    if isinstance(raw, dict):
+        sd = raw.get(tsym, {})
+        if isinstance(sd, dict):
+            day = sd.get("day") or sd.get("qfqday") or []
+    elif isinstance(raw, list):
+        day = raw
+    out: list[Bar] = []
+    for it in day or []:
+        if len(it) >= 5:
+            try:
+                out.append(Bar(date=it[0], open=float(it[1]), close=float(it[2]),
+                               high=float(it[3]), low=float(it[4]),
+                               volume=float(it[5]) if len(it) > 5 else 0.0))
+            except Exception:
+                continue
+    return out
+
+
+# 腾讯美股日K必须带交易所后缀(usTSLA.OQ=纳斯达克 / usBABA.N=纽交所);裸 us{CODE}
+# 只回"首日+最新"两根退化数据,错后缀只回 1 根。后缀无法从代码推断 → 依次试
+# .OQ/.N/裸,根数达标即命中并进程内记忆(下次直达,不再多请求)。
+_US_SUFFIX_CACHE: dict[str, str] = {}
+
+
+def _fetch_tencent_us_kline(code: str, days: int) -> list[Bar]:
+    want = min(max(int(days or 1), 1), _TENCENT_MAX_COUNT)
+    ok_threshold = min(want, 5)  # 正常历史远多于 5 根;退化响应只有 1-2 根
+    cached = _US_SUFFIX_CACHE.get(code)
+    suffixes = ([cached] if cached is not None else []) + [
+        s for s in (".OQ", ".N", "") if s != cached
+    ]
+    best: list[Bar] = []
+    for suf in suffixes:
+        bars = fetch_tencent_kline_raw(f"us{code}{suf}", want)
+        if len(bars) >= ok_threshold:
+            _US_SUFFIX_CACHE[code] = suf
+            return bars
+        if len(bars) > len(best):
+            best = bars
+    return best
+
+
+class TencentKlineVendor(KlineVendor):
+    name = "tencent"
+    supports_markets = {"CN", "HK", "US"}
+
+    _MAX_COUNT = _TENCENT_MAX_COUNT  # 兼容旧引用(测试/外部按类属性取)
+
+    def fetch(self, symbols: list[Symbol], config: dict) -> list[Bar]:
+        if not symbols:
+            return []
+        sym = symbols[0]
+        if sym.market == Market.US:
+            return _fetch_tencent_us_kline(sym.code, _days(config))
+        return fetch_tencent_kline_raw(sym.to_tencent(), _days(config))
+
+
+
+def _em_secid(sym: Symbol) -> str:
+    if sym.market == Market.HK:
+        return f"116.{sym.code}"
+    if sym.market == Market.US:
+        return f"105.{sym.code}"
+    from marketdata.symbol import _cn_exchange
+    return f"{'1' if _cn_exchange(sym.code) == 'sh' else '0'}.{sym.code}"
+
+
+def fetch_eastmoney_kline(secid: str, days: int) -> list[Bar]:
+    """按显式 secid 取东财日K,不经个股 secid 推导规则(_em_secid)。
+
+    供指数等显式符号场景复用(指数与个股 secid 前缀规则不同,必须显式映射)。
+    """
+    payload = market_get(
+        _EASTMONEY_URL, host_key="push2his.eastmoney.com", min_interval_s=0.2,
+        params={"secid": secid, "klt": "101", "fqt": "1",
+                "lmt": str(min(max(int(days or 1), 1200), 20000)), "end": "20500101",
+                "fields1": "f1,f2,f3,f4,f5,f6", "fields2": "f51,f52,f53,f54,f55,f56",
+                "ut": "fa5fd1943c7b386f172d6893dbfba10b"},
+        headers={"User-Agent": "Mozilla/5.0", "Referer": "https://quote.eastmoney.com/"},
+        timeout=12, retries=1, parse="json", log_label="东财K线", symbol=secid,
+    )
+    raw = (payload or {}).get("data", {}).get("klines", []) if isinstance(payload, dict) else []
+    out: list[Bar] = []
+    for row in raw or []:
+        p = str(row).split(",")
+        if len(p) < 6:
+            continue
+        try:
+            out.append(Bar(date=p[0], open=float(p[1]), close=float(p[2]),
+                           high=float(p[3]), low=float(p[4]), volume=float(p[5])))
+        except Exception:
+            continue
+    return out
+
+
+class EastmoneyKlineVendor(KlineVendor):
+    name = "eastmoney"
+    supports_markets = {"CN", "HK"}
+
+    def fetch(self, symbols: list[Symbol], config: dict) -> list[Bar]:
+        if not symbols:
+            return []
+        sym = symbols[0]
+        if sym.market not in (Market.CN, Market.HK):
+            return []
+        days = _days(config)
+        return fetch_eastmoney_kline(_em_secid(sym), days)
+
+
+
+
+_YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+
+
+def fetch_yahoo_chart_raw(ysym: str, *, days: int, proxy: str | None = None,
+                          range_: str | None = None) -> tuple[dict, list[Bar]]:
+    """按**原始 Yahoo 符号**取 chart v8(个股 / 指数 ^GSPTSE / 汇率 CADUSD=X 通用)。
+
+    返回 (meta, bars)。meta 含 regularMarketPrice / chartPreviousClose(range=1d 时
+    即上一交易日收盘)/ currency / shortName;bars 为日K。零 crumb / 零 cookie。
+    """
+    payload = market_get(
+        _YAHOO_CHART_URL.format(sym=ysym), host_key="query2.finance.yahoo.com",
+        params={"interval": "1d", "range": range_ or _yahoo_range(days)},
+        headers=_YAHOO_HEADERS,
+        timeout=10, retries=2, parse="json", proxy=proxy,
+        log_label="Yahoo K线", symbol=ysym,
+    )
+    if not isinstance(payload, dict):
+        return {}, []
+    try:
+        result = ((payload.get("chart") or {}).get("result")) or []
+        if not result:
+            return {}, []
+        r0 = result[0] or {}
+        meta = r0.get("meta") or {}
+        timestamps = r0.get("timestamp") or []
+        indicators = r0.get("indicators") or {}
+        quote = (indicators.get("quote") or [{}])[0] or {}
+        adjcloses = (indicators.get("adjclose") or [{}])[0].get("adjclose") if indicators.get("adjclose") else None
+    except Exception:
+        return {}, []
+    opens = quote.get("open") or []
+    highs = quote.get("high") or []
+    lows = quote.get("low") or []
+    closes = quote.get("close") or []
+    volumes = quote.get("volume") or []
+    out: list[Bar] = []
+    for i, ts in enumerate(timestamps or []):
+        try:
+            o = opens[i] if i < len(opens) else None
+            h = highs[i] if i < len(highs) else None
+            low = lows[i] if i < len(lows) else None
+            c = closes[i] if i < len(closes) else None
+            if o is None or h is None or low is None or c is None:
+                continue
+            if adjcloses is not None and i < len(adjcloses) and adjcloses[i] is not None:
+                c = adjcloses[i]
+            v = volumes[i] if i < len(volumes) and volumes[i] is not None else 0
+            date = datetime.fromtimestamp(int(ts), tz=timezone.utc).strftime("%Y-%m-%d")
+            out.append(Bar(date=date, open=float(o), close=float(c),
+                           high=float(h), low=float(low), volume=float(v)))
+        except Exception:
+            continue
+    if days > 0 and len(out) > days:
+        out = out[-days:]
+    return (meta if isinstance(meta, dict) else {}), out
+
+
+def fetch_yahoo_kline_raw(ysym: str, days: int, proxy: str | None = None) -> list[Bar]:
+    """按原始 Yahoo 符号取日K(指数 ^GSPC/^GSPTSE 等显式符号场景复用)。"""
+    _meta, bars = fetch_yahoo_chart_raw(ysym, days=days, proxy=proxy)
+    return bars
+
+
+def fetch_yahoo_quote_raw(ysym: str, proxy: str | None = None) -> dict | None:
+    """按原始 Yahoo 符号取一条"轻量报价"(range=1d 的 chart meta):
+    symbol/name/current_price/prev_close/change_amount/change_pct/currency。取不到返回 None。"""
+    meta, _bars = fetch_yahoo_chart_raw(ysym, days=1, proxy=proxy, range_="1d")
+    try:
+        last = float(meta.get("regularMarketPrice"))
+    except (TypeError, ValueError):
+        return None
+    if not last:
+        return None
+    prev = None
+    for key in ("regularMarketPreviousClose", "previousClose", "chartPreviousClose"):
+        try:
+            v = meta.get(key)
+            if v is not None:
+                prev = float(v)
+                break
+        except (TypeError, ValueError):
+            continue
+    chg = round(last - prev, 4) if prev else 0.0
+    pct = round(chg / prev * 100.0, 2) if prev else 0.0
+    return {
+        "symbol": str(meta.get("symbol") or ysym),
+        "name": str(meta.get("shortName") or meta.get("longName") or ysym),
+        "current_price": last,
+        "prev_close": prev,
+        "change_amount": chg,
+        "change_pct": pct,
+        "currency": str(meta.get("currency") or ""),
+        "volume": 0.0,
+        "turnover": 0.0,
+    }
+
+
+class YahooKlineVendor(KlineVendor):
+    """Yahoo chart v8 日K,零 crumb / 零 cookie(crumb 只有 quoteSummary 基本面才需要)。"""
+
+    name = "yahoo"
+    supports_markets = {"US", "CA", "HK", "CRYPTO", "GOLD"}
+
+    def fetch(self, symbols: list[Symbol], config: dict) -> list[Bar]:
+        if not symbols:
+            return []
+        sym = symbols[0]
+        if sym.market not in (Market.US, Market.CA, Market.HK, Market.CRYPTO, Market.GOLD):
+            return []
+        days = _days(config)
+        return fetch_yahoo_kline_raw(sym.to_yfinance(), days, proxy=config.get("proxy"))

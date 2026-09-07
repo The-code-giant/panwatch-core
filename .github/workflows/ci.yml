@@ -1,0 +1,89 @@
+# PanWatch Core — continuous integration.
+#
+# Scope is deliberately limited to VERIFICATION. This workflow does not log in to
+# any registry, does not build or publish a container image, does not create
+# releases or tags, and does not deploy. Publishing and deployment must be added
+# only after an explicit release review, as separate, manually triggered
+# workflows with their own scoped credentials.
+#
+# Triggers are pull_request and manual dispatch only — never push-to-branch,
+# never tag, never schedule — so that merging or tagging can never by itself
+# ship an artifact.
+
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend tests (Python 3.11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Notifications are suppressed unless --notify is passed (see
+      # tests/conftest.py). Schedulers stay off so no background job starts.
+      - name: Run tests
+        env:
+          DISABLE_SCHEDULERS: '1'
+          UPDATE_CHECK_DISABLE: '1'
+        run: python -m pytest tests/ -q
+
+  frontend:
+    name: Frontend type-check and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # `pnpm build` runs tsc before vite, so a type error fails the job rather
+      # than shipping a broken bundle — the same ordering the Dockerfile uses.
+      - name: Build
+        working-directory: frontend
+        run: pnpm build
+
+  image:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build only. The image is never tagged for a registry, never pushed, and
+      # is discarded with the runner.
+      - name: Build image
+        run: docker build -t panwatch-core:ci .
