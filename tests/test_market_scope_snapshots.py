@@ -18,7 +18,7 @@
 用独立内存 sqlite(`StaticPool`)+ 替换 `strategy_engine`/`strategy_catalog`/
 `entry_candidates` 模块内部引用的 `SessionLocal`,与 tests/test_market_scope_isolation.py
 的隔离手法一致。`from src.web.database import Base` 只为拿到 ORM 元数据建表；
-`create_engine` 是惰性的，不建立连接、不触碰真实 `data/panwatch.db`。
+`create_engine` 是惰性的，不建立连接、不触碰真实 `data/tickerkeep.db`。
 """
 
 from __future__ import annotations
@@ -50,7 +50,7 @@ def _no_network(monkeypatch):
 
 @pytest.fixture
 def mem_session_factory(monkeypatch):
-    """独立内存 sqlite(不碰真实 data/panwatch.db):把 strategy_engine/strategy_catalog/
+    """独立内存 sqlite(不碰真实 data/tickerkeep.db):把 strategy_engine/strategy_catalog/
     entry_candidates 模块内部引用的 SessionLocal 换成绑定到本地全新引擎的 sessionmaker。"""
     from src.web import models as _models  # noqa: F401  确保所有 ORM 模型注册到 Base.metadata
     from src.web.database import Base

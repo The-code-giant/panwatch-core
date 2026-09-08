@@ -53,7 +53,7 @@ _CA_ETF_RE = re.compile(r"\bETF\b|Index Fund|iShares|Vanguard|Horizons|Global X|
 
 @dataclass(frozen=True)
 class Listing:
-    symbol: str            # canonical PanWatch code (US: BRK.B; CA: CTC-A.TO)
+    symbol: str            # canonical TickerKeep code (US: BRK.B; CA: CTC-A.TO)
     yahoo_symbol: str      # Yahoo spelling (US: BRK-B; CA: same as symbol)
     exchange_symbol: str   # exchange spelling (US: BRK.B; CA: CTC.A)
     name: str

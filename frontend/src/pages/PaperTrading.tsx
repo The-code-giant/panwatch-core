@@ -9,18 +9,18 @@ import {
   type StrategyPerformanceItem,
   type NotifyChannelItem,
   type MarketView,
-} from '@panwatch/api'
+} from '@tickerkeep/api'
 import { EQUITY_MARKETS, MARKET_LABEL, type EquityMarket } from '@/lib/markets'
 
 /** Allocation shown when the account has none saved yet: US 60, Canada 40. */
 const DEFAULT_ALLOCATION: Record<EquityMarket, number> = { US: 0.6, CA: 0.4 }
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@panwatch/base-ui/components/ui/dialog'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
-import { Card, CardHeader, CardTitle, StatCell } from '@panwatch/base-ui/components/ui/card'
-import { TableWrap, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@panwatch/base-ui/components/ui/table'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
+import { Card, CardHeader, CardTitle, StatCell } from '@tickerkeep/base-ui/components/ui/card'
+import { TableWrap, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@tickerkeep/base-ui/components/ui/table'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
 
 const EXIT_REASON_MAP: Record<string, string> = {
   stop_loss: 'Stop loss',

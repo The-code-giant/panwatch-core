@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Rebuild the local PanWatch image from the working tree and restart the
+# Rebuild the local TickerKeep image from the working tree and restart the
 # container. This is the only supported way to look at the app locally:
 # the Vite dev server is not used for review.
 #
@@ -18,22 +18,22 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-echo "==> Building panwatch:en-local from the working tree"
-docker compose build panwatch
+echo "==> Building tickerkeep:en-local from the working tree"
+docker compose build tickerkeep
 
 echo "==> Restarting the container"
-docker compose up -d panwatch
+docker compose up -d tickerkeep
 
 echo "==> Waiting for the app to answer on :8000"
 for _ in $(seq 1 60); do
   if curl -fsS -o /dev/null http://127.0.0.1:8000/api/health 2>/dev/null; then
     echo "Ready: http://localhost:8000"
-    [ "${1:-}" = "--logs" ] && exec docker compose logs -f panwatch
+    [ "${1:-}" = "--logs" ] && exec docker compose logs -f tickerkeep
     exit 0
   fi
   sleep 2
 done
 
 echo "The app did not answer within 120s. Recent logs:" >&2
-docker compose logs --tail 60 panwatch >&2
+docker compose logs --tail 60 tickerkeep >&2
 exit 1

@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Loader2 } from 'lucide-react'
-import { healthApi, type SelfCheckItem } from '@panwatch/api'
+import { healthApi, type SelfCheckItem } from '@tickerkeep/api'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@panwatch/base-ui/components/ui/dialog'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
-import { Badge } from '@panwatch/base-ui/components/ui/badge'
+} from '@tickerkeep/base-ui/components/ui/dialog'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
+import { Badge } from '@tickerkeep/base-ui/components/ui/badge'
 
 interface SelfCheckModalProps {
   open: boolean

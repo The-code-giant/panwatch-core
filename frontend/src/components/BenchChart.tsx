@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import type { BenchmarkCurvePoint } from '@panwatch/api'
+import type { BenchmarkCurvePoint } from '@tickerkeep/api'
 
 interface BenchChartProps {
   curve: BenchmarkCurvePoint[]

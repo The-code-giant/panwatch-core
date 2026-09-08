@@ -49,11 +49,11 @@ class ChartAnalystAgent(BaseAgent):
             for stock in context.watchlist
         ]
 
-        # Render charts (provider is always the in-process "panwatch" renderer)
+        # Render charts (provider is always the in-process "tickerkeep" renderer)
         self._renderer = ChartRenderer()
         try:
             screenshots = await self._renderer.capture_batch(
-                stocks, period=self.period, provider="panwatch"
+                stocks, period=self.period, provider="tickerkeep"
             )
 
             # Structured signals (quote/technical/position), used to enrich the prompt (failure doesn't affect charts)

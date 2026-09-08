@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TrendingUp, Lock, Eye, EyeOff, User } from 'lucide-react'
-import { authApi } from '@panwatch/api'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { Label } from '@panwatch/base-ui/components/ui/label'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
+import { authApi } from '@tickerkeep/api'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { Label } from '@tickerkeep/base-ui/components/ui/label'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -81,7 +81,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-rail flex items-center justify-center mb-4">
             <TrendingUp className="w-8 h-8 text-rail-foreground" />
           </div>
-          <h1 className="page-title !text-[28px]">PanWatch</h1>
+          <h1 className="page-title !text-[28px]">TickerKeep</h1>
           <p className="text-sm text-muted-foreground mt-1">AI Stock Watch Assistant</p>
         </div>
 

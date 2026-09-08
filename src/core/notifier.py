@@ -398,7 +398,7 @@ class NotifierManager:
             if link_m:
                 notice = f"\n\n...content truncated, full report: {link_m.group(1)}"
             else:
-                notice = "\n\n...content truncated, view the full report in PanWatch"
+                notice = "\n\n...content truncated, view the full report in TickerKeep"
             text = text[: 3900 - len(notice)].rstrip() + notice
         payload = {
             "chat_id": chat_id,

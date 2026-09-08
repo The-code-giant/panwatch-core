@@ -18,7 +18,7 @@
 绑定到内存引擎的 sessionmaker,与 tests/test_market_scope_isolation.py 中
 `mem_server_session_factory` 的隔离手法完全一致(该手法已在本仓库验证过:
 `import server` 只会在模块级注册路由/定义函数,真正的 `init_db()` 只在 FastAPI
-`lifespan` 里调用,不会在 import 阶段触碰真实 data/panwatch.db)。
+`lifespan` 里调用,不会在 import 阶段触碰真实 data/tickerkeep.db)。
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ def _no_network(monkeypatch):
 
 @pytest.fixture
 def mem_server_session_factory(monkeypatch):
-    """独立内存 sqlite(不碰真实 data/panwatch.db):把 server 模块内部引用的 SessionLocal
+    """独立内存 sqlite(不碰真实 data/tickerkeep.db):把 server 模块内部引用的 SessionLocal
     换成绑定到本地全新引擎的 sessionmaker。"""
     from src.web import models as _models  # noqa: F401  确保所有 ORM 模型注册到 Base.metadata
     from src.web.database import Base

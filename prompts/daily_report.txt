@@ -85,9 +85,9 @@ Examples:
 At the very end of the Markdown body, append a JSON block for program parsing (must be valid JSON, using double quotes; do not wrap it in a Markdown code block).
 
 Output format (must include the tags exactly as shown):
-<!--PANWATCH_JSON-->
+<!--TICKERKEEP_JSON-->
 {...}
-<!--/PANWATCH_JSON-->
+<!--/TICKERKEEP_JSON-->
 
 JSON Schema (field descriptions):
 - suggestions: array, must have exactly 1 entry per watchlist stock
@@ -101,4 +101,4 @@ JSON Schema (field descriptions):
   - risks: array of risk points (up to 3)
 
 Note:
-- The JSON block must be placed at the very end of the text, and nothing may be output after <!--/PANWATCH_JSON-->.
+- The JSON block must be placed at the very end of the text, and nothing may be output after <!--/TICKERKEEP_JSON-->.

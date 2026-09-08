@@ -5,7 +5,7 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 /** 实际生效的主题(system 解析后的结果)。 */
 export type Theme = 'light' | 'dark'
 
-const STORAGE_KEY = 'panwatch-theme'
+const STORAGE_KEY = 'tickerkeep-theme'
 
 function readMode(): ThemeMode {
   const stored = localStorage.getItem(STORAGE_KEY)

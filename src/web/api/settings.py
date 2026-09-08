@@ -55,7 +55,7 @@ SETTING_DESCRIPTIONS = {
     "notify_retry_backoff_seconds": "Notification retry backoff seconds (base)",
     "notify_dedupe_ttl_overrides": "Notification dedupe window overrides (JSON, blank for default)",
     "stock_link_platform": "Stock link platform (the quote site opened when clicking a stock symbol)",
-    "panwatch_base_url": "PanWatch public base URL (used for analysis-detail links in notifications, e.g. https://panwatch.example.com)",
+    "tickerkeep_base_url": "TickerKeep public base URL (used for analysis-detail links in notifications, e.g. https://tickerkeep.example.com)",
 }
 
 SETTING_KEYS = list(SETTING_DESCRIPTIONS.keys())
@@ -71,7 +71,7 @@ def _get_env_defaults() -> dict[str, str]:
         "notify_retry_backoff_seconds": str(s.notify_retry_backoff_seconds),
         "notify_dedupe_ttl_overrides": s.notify_dedupe_ttl_overrides,
         "stock_link_platform": DEFAULT_PLATFORM,
-        "panwatch_base_url": os.getenv("PANWATCH_BASE_URL", ""),
+        "tickerkeep_base_url": os.getenv("TICKERKEEP_BASE_URL", ""),
     }
 
 

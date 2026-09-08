@@ -7,18 +7,18 @@ import {
   type StrategyCatalogItem,
   type StrategySignalItem,
   type StrategyStatsResponse,
-} from '@panwatch/api'
+} from '@tickerkeep/api'
 import { DEFAULT_MARKET, EQUITY_MARKETS, MARKET_LABEL, marketLabel, type MarketView } from '@/lib/markets'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@panwatch/base-ui/components/ui/select'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tickerkeep/base-ui/components/ui/select'
 import { useLocalStorage } from '@/lib/utils'
-import StockInsightModal from '@panwatch/biz-ui/components/stock-insight-modal'
-import { resolveActiveActionLabel } from '@panwatch/biz-ui/components/suggestion-action'
+import StockInsightModal from '@tickerkeep/biz-ui/components/stock-insight-modal'
+import { resolveActiveActionLabel } from '@tickerkeep/biz-ui/components/suggestion-action'
 import FactorWeightsPanel from '@/components/FactorWeightsPanel'
 import SignalScoreShareCard from '@/components/SignalScoreShareCard'
-import { Card } from '@panwatch/base-ui/components/ui/card'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
-import { InfoTip } from '@panwatch/base-ui/components/ui/tooltip'
+import { Card } from '@tickerkeep/base-ui/components/ui/card'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
+import { InfoTip } from '@tickerkeep/base-ui/components/ui/tooltip'
 
 type SourceFilter = 'all' | 'market_scan' | 'watchlist' | 'mixed'
 type HoldingFilter = 'all' | 'held' | 'unheld'
@@ -219,12 +219,12 @@ export default function OpportunitiesPage() {
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
 
   // Key bumped to v4 when the market list changed, so a stored retired code is not read back.
-  const [market, setMarket] = useLocalStorage<MarketView>('panwatch_opportunities_market_v4', DEFAULT_FILTERS.market)
-  const [source, setSource] = useLocalStorage<SourceFilter>('panwatch_opportunities_source_v3', DEFAULT_FILTERS.source)
-  const [holding, setHolding] = useLocalStorage<HoldingFilter>('panwatch_opportunities_holding_v3', DEFAULT_FILTERS.holding)
-  const [strategy, setStrategy] = useLocalStorage('panwatch_opportunities_strategy_v3', DEFAULT_FILTERS.strategy)
-  const [risk, setRisk] = useLocalStorage<RiskFilter>('panwatch_opportunities_risk_v3', DEFAULT_FILTERS.risk)
-  const [minScore, setMinScore] = useLocalStorage('panwatch_opportunities_min_score_v3', DEFAULT_FILTERS.minScore)
+  const [market, setMarket] = useLocalStorage<MarketView>('tickerkeep_opportunities_market_v4', DEFAULT_FILTERS.market)
+  const [source, setSource] = useLocalStorage<SourceFilter>('tickerkeep_opportunities_source_v3', DEFAULT_FILTERS.source)
+  const [holding, setHolding] = useLocalStorage<HoldingFilter>('tickerkeep_opportunities_holding_v3', DEFAULT_FILTERS.holding)
+  const [strategy, setStrategy] = useLocalStorage('tickerkeep_opportunities_strategy_v3', DEFAULT_FILTERS.strategy)
+  const [risk, setRisk] = useLocalStorage<RiskFilter>('tickerkeep_opportunities_risk_v3', DEFAULT_FILTERS.risk)
+  const [minScore, setMinScore] = useLocalStorage('tickerkeep_opportunities_min_score_v3', DEFAULT_FILTERS.minScore)
   const [snapshotDate, setSnapshotDate] = useState('')
 
   const [insightOpen, setInsightOpen] = useState(false)

@@ -9,12 +9,12 @@ import {
   type AlertHitToday, type DashboardMarketIndex,
   type DashboardQuoteResponse, type DashboardWatchStock, type PortfolioBenchmark,
   type PortfolioTodo,
-} from '@panwatch/api'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
-import { InfoTip } from '@panwatch/base-ui/components/ui/tooltip'
+} from '@tickerkeep/api'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
+import { InfoTip } from '@tickerkeep/base-ui/components/ui/tooltip'
 import {
   resolveSuggestionColorClass, resolveSuggestionLabel,
-} from '@panwatch/biz-ui/components/suggestion-action'
+} from '@tickerkeep/biz-ui/components/suggestion-action'
 import {
   dirChip, dirText, fmtCompact, fmtNum, fmtPct, marketBadgeClass, marketClass, symbolMark,
 } from '@/lib/market'

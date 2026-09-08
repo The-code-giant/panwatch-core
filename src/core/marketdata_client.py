@@ -1,4 +1,4 @@
-"""PanWatch <-> marketdata wiring: DB config port, process singleton, dict/NewsItem adapters.
+"""TickerKeep <-> marketdata wiring: DB config port, process singleton, dict/NewsItem adapters.
 
 - DbConfigProvider: maps the DataSource table to marketdata SourceConfig (ConfigProvider port).
 - get_market_data(): process-level singleton (stateless vendors + DB-backed config port).

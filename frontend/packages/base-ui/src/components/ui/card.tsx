@@ -104,12 +104,14 @@ const StatCell = React.forwardRef<HTMLDivElement, StatCellProps>(
   ({ className, label, value, aside, tone = 'default', ...props }, ref) => (
     <div ref={ref} className={cn('p-4 min-w-0', className)} {...props}>
       <div className="stat-label mb-1 truncate">{label}</div>
-      <div className="flex items-baseline gap-2 min-w-0">
-        {/* The headline figure never truncates: a clipped number is worse than a
-            missing aside, and `100.0%` ellipsised to `100....` loses the unit
-            entirely. The aside yields the space instead. */}
-        <span className={cn('stat-value whitespace-nowrap shrink-0', toneClass[tone])}>{value}</span>
-        {aside ? <span className="min-w-0 truncate">{aside}</span> : null}
+      {/* Neither number is ever clipped. The headline figure keeps its full
+          width (`100.0%` ellipsised to `100....` loses the unit entirely), and
+          the aside wraps to a second line rather than truncating -- `truncate`
+          on an inline span hides the overflow WITHOUT an ellipsis, which
+          rendered `(+8.13%)` as a bare `13%)`. */}
+      <div className="flex flex-wrap items-baseline gap-x-2 min-w-0">
+        <span className={cn('stat-value whitespace-nowrap', toneClass[tone])}>{value}</span>
+        {aside ? <span className="whitespace-nowrap">{aside}</span> : null}
       </div>
     </div>
   ),

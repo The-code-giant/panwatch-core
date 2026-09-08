@@ -1,4 +1,4 @@
-# Contributing to PanWatch Core
+# Contributing to TickerKeep Core
 
 Keep changes focused and describe behavior and verification in your pull request.
 New product text is English. Preserve inherited attribution, historical user
@@ -38,12 +38,12 @@ docker run --rm --network none --no-healthcheck \
   -e DISABLE_SCHEDULERS=1 -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
   -e PYTHONPATH=/work:/work/packages/marketdata/src \
   --mount type=bind,src=/tmp/core-check,dst=/work \
-  -w /work --entrypoint python panwatch:en-local \
+  -w /work --entrypoint python tickerkeep:en-local \
   -m pytest tests/test_installation_isolation.py -q
 ```
 
 `tests/conftest.py` unconditionally chooses a new temporary `DATA_DIR`, points
-`PANWATCH_ENV_FILE` at a nonexistent file, and disables schedulers and update checks
+`TICKERKEEP_ENV_FILE` at a nonexistent file, and disables schedulers and update checks
 before importing application modules. Early imports fail fast. `--notify` is
 rejected. Use synthetic sentinels to prove isolation, never an actual installation.
 

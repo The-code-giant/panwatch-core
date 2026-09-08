@@ -66,7 +66,7 @@ def _patch_ai_message_init() -> None:
     except ImportError:
         return
 
-    if getattr(AIMessage, "_panwatch_patched", False):
+    if getattr(AIMessage, "_tickerkeep_patched", False):
         return
 
     original_init = AIMessage.__init__
@@ -77,7 +77,7 @@ def _patch_ai_message_init() -> None:
         return original_init(self, *args, **kwargs)
 
     AIMessage.__init__ = _patched_init  # type: ignore[method-assign]
-    AIMessage._panwatch_patched = True  # type: ignore[attr-defined]
+    AIMessage._tickerkeep_patched = True  # type: ignore[attr-defined]
     logger.info("[TA compat] 已 patch AIMessage.__init__ 容忍 tool_calls.args 字符串")
 
 
@@ -95,7 +95,7 @@ def _patch_tool_call_args_coercion() -> None:
         logger.debug("[TA compat] create_tool_call 未找到,跳过")
         return
 
-    if getattr(create_func, "_panwatch_patched", False):
+    if getattr(create_func, "_tickerkeep_patched", False):
         return  # 已经 patched
 
     original = create_func
@@ -130,7 +130,7 @@ def _patch_tool_call_args_coercion() -> None:
 
         return original(*args, **kwargs)
 
-    _patched_create_tool_call._panwatch_patched = True  # type: ignore[attr-defined]
+    _patched_create_tool_call._tickerkeep_patched = True  # type: ignore[attr-defined]
 
     # 替换模块级符号 + 替换内部 import
     _tool_module.create_tool_call = _patched_create_tool_call

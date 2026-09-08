@@ -1,4 +1,4 @@
-"""Versioned database migrations for PanWatch."""
+"""Versioned database migrations for TickerKeep."""
 
 from __future__ import annotations
 

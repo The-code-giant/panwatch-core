@@ -1,5 +1,5 @@
-import { type DeepAnalysisResult } from '@panwatch/api'
-import { normalizeSuggestionAction } from '@panwatch/biz-ui/components/suggestion-action'
+import { type DeepAnalysisResult } from '@tickerkeep/api'
+import { normalizeSuggestionAction } from '@tickerkeep/biz-ui/components/suggestion-action'
 import ShareCardDialog from './ShareCardDialog'
 
 interface ShareCardModalProps {

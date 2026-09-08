@@ -26,11 +26,11 @@ import {
   tradingAgentsApi,
   type DeepAnalysisResult,
   type HistoryComparisonResponse,
-} from '@panwatch/api'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
-import { buildAnalysisSections } from '@panwatch/biz-ui/analysis-sections'
+} from '@tickerkeep/api'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
+import { buildAnalysisSections } from '@tickerkeep/biz-ui/analysis-sections'
 import ShareCardModal from '../components/ShareCardModal'
 
 /** Decision headline colour: emphasis is weight and size, not hue - the
@@ -59,7 +59,7 @@ const SECTION_ICON: Record<string, LucideIcon> = {
 }
 
 /** 二级目录显示开关的 localStorage 键(记住用户选择) */
-const TOC_SUB_KEY = 'panwatch_toc_show_sub'
+const TOC_SUB_KEY = 'tickerkeep_toc_show_sub'
 
 function pctClass(v: number | null | undefined): string {
   if (v == null) return 'text-muted-foreground'

@@ -56,7 +56,7 @@ YAHOO_QUOTE_TYPES = {"EQUITY", "ETF"}
 
 
 def yahoo_market_for_exchange(exchange: str) -> str | None:
-    """Map a Yahoo ``exchange`` code to a PanWatch market (CA / US), or None if neither."""
+    """Map a Yahoo ``exchange`` code to a TickerKeep market (CA / US), or None if neither."""
     ex = (exchange or "").strip().upper()
     if ex in YAHOO_CA_EXCHANGES:
         return "CA"
@@ -69,7 +69,7 @@ def map_yahoo_search_quotes(quotes: list[dict], market: str = "", limit: int = 2
     """Pure mapping of yfinance ``Search().quotes`` rows -> [{symbol, name, market}].
 
     Keeps only EQUITY/ETF rows on US or Canadian exchanges and only enabled markets.
-    US symbols are folded to the canonical PanWatch form (``BRK-B`` -> ``BRK.B``) via
+    US symbols are folded to the canonical TickerKeep form (``BRK-B`` -> ``BRK.B``) via
     ``marketdata.from_yfinance``. When the universe is loaded, rows that are not in the
     directory for their market are dropped (``universe.is_tradable`` fails open when a
     market has no rows). ``market`` restricts to a single market when given.

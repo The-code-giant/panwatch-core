@@ -52,10 +52,10 @@ class Settings(BaseSettings):
     )
 
     model_config = {
-        # 测试/隔离场景下由 tests/conftest.py 在导入期把 PANWATCH_ENV_FILE 指向一个
+        # 测试/隔离场景下由 tests/conftest.py 在导入期把 TICKERKEEP_ENV_FILE 指向一个
         # 不存在的路径,从而彻底跳过真实 .env 的加载(而不是加载后再覆盖字段)。
         # 生产/自托管场景不设置该变量时,行为与之前完全一致(读 CWD 下的 .env)。
-        "env_file": os.environ.get("PANWATCH_ENV_FILE", ".env"),
+        "env_file": os.environ.get("TICKERKEEP_ENV_FILE", ".env"),
         "env_file_encoding": "utf-8",
         # .env 里可能有 HTTPS_PROXY 等未声明字段(httpx/系统标准变量),忽略不报错
         "extra": "ignore",

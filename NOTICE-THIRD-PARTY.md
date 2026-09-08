@@ -1,4 +1,4 @@
-# PanWatch Core — Third-Party Licence Notice
+# TickerKeep Core — Third-Party Licence Notice
 
 Compiled as part of release gate **G2** (third-party licence verification), which
 was previously skipped because the audit ran with networking disabled. This
@@ -12,7 +12,7 @@ during this review.
 
 ## Upstream project licence (unchanged)
 
-PanWatch Core is MIT-licensed. The upstream MIT copyright notice, reproduced in
+TickerKeep Core is MIT-licensed. The upstream MIT copyright notice, reproduced in
 `LICENSE` and required to be carried in all copies:
 
 ```
@@ -61,7 +61,7 @@ SOFTWARE.
 licence was found anywhere in this dependency set.** Every item above is either
 permissive (MIT/BSD/ISC/Apache-2.0) or, for the one non-OSS case (Satoshi), a
 free-for-commercial-use closed-source font licence with no copyleft or
-redistribution-of-the-work-itself obligation on PanWatch's own code. **None of
+redistribution-of-the-work-itself obligation on TickerKeep's own code. **None of
 items 1–4 is a release blocker for MIT publication**, provided the two actions
 noted under "Action items" below are taken.
 
@@ -196,8 +196,8 @@ change silently disabling it.
     themselves and redistribution of the **font files** (e.g. re-hosting them
     on another font marketplace, giving raw font files to third parties) are
     prohibited. This restricts redistributing the *font asset*, not
-    PanWatch's own source code, and does not affect the MIT status of
-    PanWatch Core itself.
+    TickerKeep's own source code, and does not affect the MIT status of
+    TickerKeep Core itself.
 
 **Verdict: ITF Free Font License (FFL) v2.0.** Not an OSI-approved open-source
 licence, but explicitly free for commercial use, with CDN embedding via

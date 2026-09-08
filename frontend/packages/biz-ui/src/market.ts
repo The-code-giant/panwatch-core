@@ -1,4 +1,4 @@
-import { MARKET_LABEL, isMarket } from '@panwatch/api/markets'
+import { MARKET_LABEL, isMarket } from '@tickerkeep/api/markets'
 
 export interface MarketBadgeInfo {
   style: string

@@ -8,7 +8,7 @@
  *
  * IMPORTANT — this file must stay importable by
  * `node --experimental-strip-types` for the test suite. That means:
- *   - no path aliases (`@/...`, `@panwatch/...`) and no imports of any kind
+ *   - no path aliases (`@/...`, `@tickerkeep/...`) and no imports of any kind
  *     from a package Node can't resolve — this file has ZERO imports;
  *     every type it needs is declared locally below.
  *   - no `enum`, no parameter properties, no namespaces — nothing that

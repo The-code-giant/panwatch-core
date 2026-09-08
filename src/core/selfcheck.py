@@ -131,7 +131,7 @@ async def probe_notify_channel(channel, *, send: bool = False) -> dict:
             return _item("notify", f"nc:{channel.id}", name, "ok", latency,
                          note="Only the configuration format was checked, nothing was actually sent (check \"Include real send\" to send a test message).")
         result = await notifier.notify_with_result(
-            title="System Self-Check", content="This is a PanWatch system self-check test message.", bypass_quiet_hours=True)
+            title="System Self-Check", content="This is a TickerKeep system self-check test message.", bypass_quiet_hours=True)
         latency = int((time.monotonic() - t0) * 1000)
         ok = bool(result.get("success"))
         return _item("notify", f"nc:{channel.id}", name, _status_for(ok, latency), latency,

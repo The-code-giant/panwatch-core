@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
-import { fetchAPI } from '@panwatch/api'
-import { DEFAULT_MARKET } from '@panwatch/api/markets'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@panwatch/base-ui/components/ui/dialog'
-import { Button } from '@panwatch/base-ui/components/ui/button'
+import { fetchAPI } from '@tickerkeep/api'
+import { DEFAULT_MARKET } from '@tickerkeep/api/markets'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
 import { buildKlineSuggestion } from '@/lib/kline-scorer'
-import { HoverPopover } from '@panwatch/base-ui/components/ui/hover-popover'
-import { TechnicalBadge, technicalToneFromSuggestionAction } from '@panwatch/biz-ui/components/technical-badge'
+import { HoverPopover } from '@tickerkeep/base-ui/components/ui/hover-popover'
+import { TechnicalBadge, technicalToneFromSuggestionAction } from '@tickerkeep/biz-ui/components/technical-badge'
 
 export interface KlineSummaryData {
   // meta (from backend)
@@ -177,7 +177,7 @@ export function KlineSummaryDialog({
         parts.push(`Score basis: ${suggestion.items.map(e => `${e.text}(${e.delta > 0 ? '+' : ''}${e.delta})`).join('; ')}`)
       }
     }
-    window.dispatchEvent(new CustomEvent('panwatch-open-chat', {
+    window.dispatchEvent(new CustomEvent('tickerkeep-open-chat', {
       detail: { symbol, market, stockName: stockName || symbol, pageContext: parts.join('\n') }
     }))
     onOpenChange(false)

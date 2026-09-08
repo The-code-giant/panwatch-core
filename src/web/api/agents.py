@@ -727,7 +727,7 @@ def get_run_progress(trace_id: str, db: Session = Depends(get_db)):
 
     # 工具调用诊断:汇总 5 类 action 次数 + 最近 50 条详情
     # HK-format / fallback legacy scenarios fold into the base classes (HIT/PASSTHROUGH/ERROR),
-    # source 字段区分具体来源(yfinance/panwatch HK fallback/...)
+    # source 字段区分具体来源(yfinance/tickerkeep HK fallback/...)
     toolkit_logs = [d for d in log_dicts if d.get("event") == "ta_toolkit"]
     toolkit_summary = {"hit": 0, "miss": 0, "passthrough": 0, "fallthrough": 0, "error": 0}
     toolkit_recent = []

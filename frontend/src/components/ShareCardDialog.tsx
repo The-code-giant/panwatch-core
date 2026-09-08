@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@panwatch/base-ui/components/ui/dialog'
-import { Button } from '@panwatch/base-ui/components/ui/button'
+} from '@tickerkeep/base-ui/components/ui/dialog'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
 
 interface ShareCardDialogProps {
   open: boolean
@@ -28,7 +28,7 @@ interface ShareCardDialogProps {
  * - The card container has a fixed width (640px by default), with its own white→#f8fafc gradient background, rounded
  *   corners, padding, system font, and explicit dark text, ensuring the exported PNG looks the same under any theme
  *   (light/dark). Each business card only needs to supply its "face" children.
- * - The footer (disclaimer + PanWatch · github promo line) is rendered uniformly by the shell as the consistency
+ * - The footer (disclaimer + TickerKeep · github promo line) is rendered uniformly by the shell as the consistency
  *   anchor for all share cards.
  * - "Download Image" uses html-to-image's toPng (pixelRatio:2, cacheBust:true) to export as ${filename}.png.
  */
@@ -121,7 +121,7 @@ export default function ShareCardDialog({
               >
                 P
               </span>
-              <span>PanWatch</span>
+              <span>TickerKeep</span>
             </div>
           </div>
         </div>

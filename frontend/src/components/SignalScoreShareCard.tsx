@@ -1,7 +1,7 @@
-import { type StrategySignalItem } from '@panwatch/api'
+import { type StrategySignalItem } from '@tickerkeep/api'
 import ShareCardDialog from './ShareCardDialog'
 import { marketLabel } from '@/lib/markets'
-import { resolveActiveActionLabel } from '@panwatch/biz-ui/components/suggestion-action'
+import { resolveActiveActionLabel } from '@tickerkeep/biz-ui/components/suggestion-action'
 
 interface SignalScoreShareCardProps {
   open: boolean

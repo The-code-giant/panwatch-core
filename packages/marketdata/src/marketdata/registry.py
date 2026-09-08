@@ -4,7 +4,7 @@
 ``PACKAGE_VENDORS_BY_TYPE`` derives the vendor-name sets from the same ``VENDOR_CLASSES_BY_TYPE``
 so the two can never drift apart.
 
-The host (PanWatch ``DataSource`` table) uses this to decide whether a ``(type, provider)`` row is
+The host (TickerKeep ``DataSource`` table) uses this to decide whether a ``(type, provider)`` row is
 an orphan: ``legal(type) = PACKAGE_VENDORS_BY_TYPE.get(type, frozenset()) | seed providers``.
 Discovery and the index strip are market-level, not symbol-based; they do not go through an
 Engine or a DataSource row and therefore do not appear here.

@@ -82,7 +82,7 @@ class DataCollectorManager:
                 "tencent": lambda cfg: ("tencent", KlineCollector),
             },
             "chart": {
-                "panwatch": lambda cfg: ("panwatch", cfg),
+                "tickerkeep": lambda cfg: ("tickerkeep", cfg),
             },
         }
 

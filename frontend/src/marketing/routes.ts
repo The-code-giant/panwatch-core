@@ -1,6 +1,6 @@
 /**
- * panwatch-core stub. The public marketing site is not part of the open-source
- * core; it lives in the private panwatch-cloud repository. This module keeps the
+ * tickerkeep-core stub. The public marketing site is not part of the open-source
+ * core; it lives in the private tickerkeep-cloud repository. This module keeps the
  * import contract used by src/main.tsx and src/App.tsx while routing every path
  * to the application.
  */

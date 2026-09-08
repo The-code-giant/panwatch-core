@@ -28,7 +28,7 @@ from src.agents.tradingagents.llm_adapter import (
     inject_api_key_env,
 )
 from src.agents.tradingagents.progress import (
-    PanWatchProgressHandler,
+    TickerKeepProgressHandler,
     aggregate_progress,
     STAGES_ORDER,
 )
@@ -38,7 +38,7 @@ from src.agents.tradingagents.result_mapper import (
 )
 from src.agents.tradingagents.toolkit_adapter import (
     is_a_share,
-    panwatch_data_context,
+    tickerkeep_data_context,
     patch_route_to_vendor,
 )
 
@@ -215,11 +215,11 @@ class TestToolkitAdapter(unittest.TestCase):
         self.assertFalse(is_a_share("12345"))   # 5 位
         self.assertFalse(is_a_share(""))
 
-    def test_panwatch_data_context_isolation(self):
+    def test_tickerkeep_data_context_isolation(self):
         """数据上下文 — 进入/退出时不污染外部(基于 ContextVar)"""
         from src.agents.tradingagents import toolkit_adapter
         self.assertEqual(toolkit_adapter._cache(), {})
-        with panwatch_data_context({"klines": [1, 2, 3]}):
+        with tickerkeep_data_context({"klines": [1, 2, 3]}):
             self.assertEqual(toolkit_adapter._cache().get("klines"), [1, 2, 3])
         self.assertEqual(toolkit_adapter._cache(), {})
 
@@ -238,7 +238,7 @@ class TestToolkitAdapter(unittest.TestCase):
 class TestProgress(unittest.TestCase):
     def test_progress_handler_records_cost(self):
         """ProgressHandler — record_cost 累加 total_cost"""
-        handler = PanWatchProgressHandler(trace_id="test-123")
+        handler = TickerKeepProgressHandler(trace_id="test-123")
         handler.record_cost(0.01)
         handler.record_cost(0.02)
         self.assertAlmostEqual(handler._total_cost, 0.03)

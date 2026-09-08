@@ -41,4 +41,4 @@
 ## Security & Configuration Tips
 - Secrets: do not commit API keys; configure via UI or env vars (`.env`, `AUTH_USERNAME`, `AUTH_PASSWORD`, `JWT_SECRET`, `DATA_DIR`).
 - Network/SSL: optional corporate CA via `data/ca-bundle.pem` is auto-managed; respect `HTTP(S)_PROXY`/app proxy settings.
-- Charts: `src/collectors/chart_renderer.py` draws candlestick PNGs from PanWatch's own bars with matplotlib (Agg, `MPLCONFIGDIR` under `DATA_DIR/mpl`); there is no browser dependency.
+- Charts: `src/collectors/chart_renderer.py` draws candlestick PNGs from TickerKeep's own bars with matplotlib (Agg, `MPLCONFIGDIR` under `DATA_DIR/mpl`); there is no browser dependency.

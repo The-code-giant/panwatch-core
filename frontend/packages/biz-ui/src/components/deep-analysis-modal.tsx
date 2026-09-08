@@ -10,11 +10,11 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { buildAnalysisSections, type AnalysisSection } from '../analysis-sections'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@panwatch/base-ui/components/ui/dialog'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@panwatch/base-ui/components/ui/tabs'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
-import { HoverPopover } from '@panwatch/base-ui/components/ui/hover-popover'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@tickerkeep/base-ui/components/ui/tabs'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
+import { HoverPopover } from '@tickerkeep/base-ui/components/ui/hover-popover'
 import {
   subscribeSSE,
   tradingAgentsApi,
@@ -22,7 +22,7 @@ import {
   type DeepAnalysisResult,
   type ProgressResponse,
   type ProgressStage,
-} from '@panwatch/api'
+} from '@tickerkeep/api'
 
 const STAGE_LABEL: Record<string, string> = {
   market_analyst: 'Technical Analyst',
@@ -46,7 +46,7 @@ const DECISION_COLOR: Record<string, string> = {
 const POLL_INTERVAL_MS = 2000
 
 /** Records a stock's most recently triggered trace_id in localStorage; restores polling when the modal is reopened */
-const STORAGE_KEY_PREFIX = 'panwatch:tradingagents:running:'
+const STORAGE_KEY_PREFIX = 'tickerkeep:tradingagents:running:'
 /** How long a trace_id can persist before it's considered possibly no longer running (avoids showing idle for a stale trace) */
 const TRACE_MAX_AGE_MS = 20 * 60 * 1000  // 20 minutes
 
@@ -544,7 +544,7 @@ export function ToolkitDiagnostics({
       <summary className="cursor-pointer flex items-center gap-2 flex-wrap">
         <span className="font-medium">Data injection diagnostics</span>
         <span className="text-[11px] text-muted-foreground">
-          (PanWatch data → TradingAgents tools)
+          (TickerKeep data → TradingAgents tools)
         </span>
         <span className="ml-auto text-[11px] whitespace-nowrap">
           <span className={ACTION_CLS.HIT}>HIT {hit}</span>
@@ -555,8 +555,8 @@ export function ToolkitDiagnostics({
         </span>
       </summary>
       <div className="text-[10.5px] text-muted-foreground/80 mt-2 leading-relaxed">
-        <span className={ACTION_CLS.HIT}>HIT</span>: used PanWatch data ·{' '}
-        <span className={ACTION_CLS.MISS}>MISS</span>: matched but not implemented by PanWatch ·{' '}
+        <span className={ACTION_CLS.HIT}>HIT</span>: used TickerKeep data ·{' '}
+        <span className={ACTION_CLS.MISS}>MISS</span>: matched but not implemented by TickerKeep ·{' '}
         <span className={ACTION_CLS.PASSTHROUGH}>Passthrough</span>: not served from the local cache, went straight to the upstream vendor ·{' '}
         <span className={ACTION_CLS.FALLTHROUGH}>Fallback</span>: cache was empty, went upstream
       </div>

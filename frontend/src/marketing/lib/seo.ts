@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 /**
- * panwatch-core stub. Same option shape as the marketing site's useSeo so that
+ * tickerkeep-core stub. Same option shape as the marketing site's useSeo so that
  * src/ProductApp.tsx compiles unchanged; only the document title is applied.
  */
 export interface SeoOptions {

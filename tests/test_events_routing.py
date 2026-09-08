@@ -30,7 +30,7 @@ def test_collector_source_and_alias():
 
 
 def test_fetch_events_uses_marketdata(monkeypatch):
-    """走 marketdata 包的 events(market=None、aware now、since_days 透传),转换为 PanWatch EventItem。"""
+    """走 marketdata 包的 events(market=None、aware now、since_days 透传),转换为 TickerKeep EventItem。"""
     captured: dict = {}
 
     class _MD:

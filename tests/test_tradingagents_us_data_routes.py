@@ -1,6 +1,6 @@
 """End-to-end coverage of every TradingAgents data route for a US symbol (AAPL).
 
-Every upstream tool call must be served from PanWatch data, not from the vendor's own
+Every upstream tool call must be served from TickerKeep data, not from the vendor's own
 network calls:
 - get_stock_data        -> kline CSV
 - get_indicators        -> one refined indicator block
@@ -19,8 +19,8 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from src.agents.tradingagents.toolkit_adapter import (
-    _serve_from_panwatch,
-    panwatch_data_context,
+    _serve_from_tickerkeep,
+    tickerkeep_data_context,
 )
 
 
@@ -150,8 +150,8 @@ def _full_ctx(extras=None):
 
 def test_get_stock_data_returns_kline_csv_for_maotai():
     """get_stock_data 工具:返回Apple K 线 CSV(含日期/收盘价)"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_stock_data", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_stock_data", "AAPL", {})
     assert "AAPL" in result
     assert "Apple Inc." in result
     assert "2026-05-15" in result
@@ -164,8 +164,8 @@ def test_get_stock_data_returns_kline_csv_for_maotai():
 
 def test_get_indicators_macd_returns_macd_values_only():
     """get_indicators(symbol, 'macd', ...) 只返回 MACD 数值,不返回 K 线 CSV"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch(
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep(
             "get_indicators", "AAPL", {},
             args=("AAPL", "macd", "2026-05-17", 30),
         )
@@ -178,8 +178,8 @@ def test_get_indicators_macd_returns_macd_values_only():
 
 def test_get_indicators_rsi_returns_rsi_values():
     """get_indicators(symbol, 'rsi', ...) 返回 RSI 6/12/24 + 状态"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch(
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep(
             "get_indicators", "AAPL", {},
             args=("AAPL", "rsi", "2026-05-17", 30),
         )
@@ -190,8 +190,8 @@ def test_get_indicators_rsi_returns_rsi_values():
 
 def test_get_indicators_kdj_returns_kdj_values():
     """get_indicators(symbol, 'kdj', ...) 返回 K/D/J 值"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch(
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep(
             "get_indicators", "AAPL", {},
             args=("AAPL", "kdj", "2026-05-17", 30),
         )
@@ -201,8 +201,8 @@ def test_get_indicators_kdj_returns_kdj_values():
 
 def test_get_indicators_boll_returns_band_values():
     """get_indicators(symbol, 'boll', ...) 返回布林带上/中/下轨"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch(
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep(
             "get_indicators", "AAPL", {},
             args=("AAPL", "boll", "2026-05-17", 30),
         )
@@ -213,10 +213,10 @@ def test_get_indicators_boll_returns_band_values():
 
 def test_get_indicators_no_repeat_full_csv():
     """关键:即使被调 8 次不同 indicator,内容也是 8 份精炼报告而非 8 份相同 K 线 CSV"""
-    with panwatch_data_context(_full_ctx()):
-        macd = _serve_from_panwatch("get_indicators", "AAPL", {}, args=("AAPL", "macd"))
-        rsi = _serve_from_panwatch("get_indicators", "AAPL", {}, args=("AAPL", "rsi"))
-        boll = _serve_from_panwatch("get_indicators", "AAPL", {}, args=("AAPL", "boll"))
+    with tickerkeep_data_context(_full_ctx()):
+        macd = _serve_from_tickerkeep("get_indicators", "AAPL", {}, args=("AAPL", "macd"))
+        rsi = _serve_from_tickerkeep("get_indicators", "AAPL", {}, args=("AAPL", "rsi"))
+        boll = _serve_from_tickerkeep("get_indicators", "AAPL", {}, args=("AAPL", "boll"))
     # 三次返回应该差异显著
     assert macd != rsi != boll
     # 每个都应小于 1k 字符(K 线 CSV 是 5k+)
@@ -229,16 +229,16 @@ def test_get_indicators_no_repeat_full_csv():
 
 def test_get_news_returns_company_announcements():
     """get_news 返回Apple真实公告标题"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_news", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_news", "AAPL", {})
     assert "Apple Inc." in result
     assert "revenue up 12% year over year" in result or "annual shareholder meeting" in result
 
 
 def test_get_global_news_with_empty_events_blocks_unrelated_news():
     """get_global_news 在没事件时返回 fallback,明确禁止 LLM 拉无关全球新闻"""
-    with panwatch_data_context(_full_ctx({"events": []})):
-        result = _serve_from_panwatch("get_global_news", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx({"events": []})):
+        result = _serve_from_tickerkeep("get_global_news", "AAPL", {})
     assert "DO NOT pull unrelated global news" in result
     assert "AAPL" in result
 
@@ -249,12 +249,12 @@ def test_get_global_news_with_empty_events_blocks_unrelated_news():
 
 def test_get_fundamentals_returns_real_financial_numbers():
     """get_fundamentals 返回真实营收/净利润/ROE(而非空 fallback)"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_fundamentals", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_fundamentals", "AAPL", {})
     assert "AAPL" in result
     assert "Apple Inc." in result
     # 真实财务数据
-    assert "[Financial data from PanWatch (Yahoo Finance / SEC EDGAR)]" in result
+    assert "[Financial data from TickerKeep (Yahoo Finance / SEC EDGAR)]" in result
     assert "Total Revenue" in result and "391" in result      # 391.04B revenue
     assert "Gross Margin (%)" in result and "46.21" in result
     assert "Do NOT invent additional numbers." in result
@@ -262,8 +262,8 @@ def test_get_fundamentals_returns_real_financial_numbers():
 
 def test_get_fundamentals_fallback_when_no_financial():
     """没 financial 数据时降级到 quote 轻量基本面(不能是空文本)"""
-    with panwatch_data_context(_full_ctx({"financial": None})):
-        result = _serve_from_panwatch("get_fundamentals", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx({"financial": None})):
+        result = _serve_from_tickerkeep("get_fundamentals", "AAPL", {})
     assert "Lightweight Fundamentals" in result
     # quote 真实数据
     assert "24.5" in result  # PE
@@ -276,8 +276,8 @@ def test_get_fundamentals_fallback_when_no_financial():
 
 def test_get_balance_sheet_returns_real_equity_and_leverage():
     """get_balance_sheet 返回真实净资产 + 资产负债率"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_balance_sheet", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_balance_sheet", "AAPL", {})
     assert "Balance sheet snapshot" in result
     assert "Book Value / Share" in result and "4.38" in result
     assert "Total Debt" in result and "Total Cash" in result
@@ -291,8 +291,8 @@ def test_get_balance_sheet_returns_real_equity_and_leverage():
 
 def test_get_cashflow_returns_real_operating_cashflow():
     """get_cashflow 返回真实经营现金流量净额(800 亿)"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_cashflow", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_cashflow", "AAPL", {})
     assert "Cash flow statement (TTM)" in result
     assert "Operating Cash Flow" in result and "118" in result   # 118.25B
     assert "Free Cash Flow" in result and "108" in result        # 108.81B
@@ -301,8 +301,8 @@ def test_get_cashflow_returns_real_operating_cashflow():
 def test_get_cashflow_does_not_match_capital_flow_branch():
     """关键 bug 回归:cashflow 不能被路由到"资金流"分支
     (上次 bug:method 含 'flow' 字串就误判为资金流向)"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_cashflow", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_cashflow", "AAPL", {})
     # The retired capital-flow branch must never catch "cashflow" (it matches on "flow").
     assert "capital flow" not in result.lower()
     assert "Cash flow statement" in result
@@ -314,8 +314,8 @@ def test_get_cashflow_does_not_match_capital_flow_branch():
 
 def test_get_income_statement_returns_real_revenue_and_profit():
     """get_income_statement 返回真实营业收入 + 净利润 + 毛利率"""
-    with panwatch_data_context(_full_ctx()):
-        result = _serve_from_panwatch("get_income_statement", "AAPL", {})
+    with tickerkeep_data_context(_full_ctx()):
+        result = _serve_from_tickerkeep("get_income_statement", "AAPL", {})
     assert "Income statement (TTM / latest reported period)" in result
     assert "Total Revenue" in result and "391" in result
     assert "Net Income" in result and "93" in result
@@ -332,9 +332,9 @@ def test_all_tools_include_stock_metadata_header():
         "get_stock_data", "get_news", "get_global_news",
         "get_fundamentals", "get_balance_sheet", "get_cashflow", "get_income_statement",
     ]
-    with panwatch_data_context(_full_ctx()):
+    with tickerkeep_data_context(_full_ctx()):
         for m in methods:
             args = ("AAPL", "macd") if m == "get_indicators" else ("AAPL",)
-            result = _serve_from_panwatch(m, "AAPL", {}, args=args)
+            result = _serve_from_tickerkeep(m, "AAPL", {}, args=args)
             assert "Apple Inc." in result or "AAPL" in result, f"{m} 缺少公司元信息"
             assert "Stock Metadata" in result or "Technical Indicator" in result, f"{m} 缺少 metadata header"

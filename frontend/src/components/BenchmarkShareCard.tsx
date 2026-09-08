@@ -1,4 +1,4 @@
-import { type PortfolioBenchmark } from '@panwatch/api'
+import { type PortfolioBenchmark } from '@tickerkeep/api'
 import ShareCardDialog from './ShareCardDialog'
 
 interface BenchmarkShareCardProps {

@@ -35,7 +35,7 @@ from src.models.market import MarketCode, default_market
 logger = logging.getLogger(__name__)
 
 # Where rendered charts land. Module-level so tests can monkeypatch it.
-CHART_DIR = Path(tempfile.gettempdir()) / "panwatch_charts"
+CHART_DIR = Path(tempfile.gettempdir()) / "tickerkeep_charts"
 
 DEFAULT_CONFIG: dict[str, Any] = {
     "bars": 160,
@@ -450,7 +450,7 @@ class ChartRenderer:
         name: str,
         market: str = "",
         period: str = "daily",
-        provider: str = "panwatch",
+        provider: str = "tickerkeep",
     ) -> ChartImage | None:
         """Render one chart. Returns ``None`` on any failure (logged)."""
         market = (market or default_market()).upper()
@@ -507,7 +507,7 @@ class ChartRenderer:
         self,
         stocks: list[Any],
         period: str = "daily",
-        provider: str = "panwatch",
+        provider: str = "tickerkeep",
     ) -> list[ChartImage]:
         """Render charts for a list of stocks (dicts or objects with symbol/name/market)."""
         results: list[ChartImage] = []

@@ -1,4 +1,4 @@
-# PanWatch Core — continuous integration.
+# TickerKeep Core — continuous integration.
 #
 # Scope is deliberately limited to VERIFICATION. This workflow does not log in to
 # any registry, does not build or publish a container image, does not create
@@ -86,4 +86,4 @@ jobs:
       # Build only. The image is never tagged for a registry, never pushed, and
       # is discarded with the runner.
       - name: Build image
-        run: docker build -t panwatch-core:ci .
+        run: docker build -t tickerkeep-core:ci .

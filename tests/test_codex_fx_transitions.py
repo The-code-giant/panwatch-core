@@ -2,7 +2,7 @@
 `src.web.api.accounts.get_portfolio_summary`(以及 `_gather_holdings`)做端到端
 断言,绝不重新实现一份"影子算法"。
 
-本文件的前四个用例逐字复用了 `/private/tmp/panwatch-codex-review5.GaGlfE/tests/
+本文件的前四个用例逐字复用了 `/private/tmp/tickerkeep-codex-review5.GaGlfE/tests/
 test_codex_fx_review.py`(独立 codex 复核探针)里的断言与 mock 方式,不削弱其原有
 断言;在此基础上补充覆盖 THE ONE AGREED CONTRACT(冷启动成功获取汇率、汇率过期后
 的 `last_known` 状态、无任何"美元计价"仓位、真实的零价格/零盈亏必须原样透出、

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { insightApi, type AddPositionEvalResult } from '@panwatch/api'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
+import { insightApi, type AddPositionEvalResult } from '@tickerkeep/api'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 
 export interface AddPositionCalc {
   newQty: number

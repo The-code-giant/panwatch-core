@@ -217,7 +217,7 @@ def test_capture_batch_accepts_dicts_and_objects(chart_dir, fake_klines):
         renderer.capture_batch(
             [{"symbol": "AAPL", "name": "Apple", "market": "US"}, _Stock(), {"symbol": ""}],
             period="daily",
-            provider="panwatch",
+            provider="tickerkeep",
         )
     )
     assert [i.symbol for i in images] == ["AAPL", "SHOP.TO"]

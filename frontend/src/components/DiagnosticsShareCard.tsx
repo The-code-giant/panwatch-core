@@ -1,4 +1,4 @@
-import { type PortfolioDiagnostics } from '@panwatch/api'
+import { type PortfolioDiagnostics } from '@tickerkeep/api'
 import ShareCardDialog from './ShareCardDialog'
 import { marketLabel } from '@/lib/markets'
 

@@ -22,13 +22,13 @@ foreach ($command in "node", "pnpm", "docker") {
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $staticDirectory = Join-Path $projectRoot "static"
-# Override with your own Docker Hub namespace, e.g. $env:IMAGE_NAME = "yourname/panwatch"
-$imageName = if ($env:IMAGE_NAME) { $env:IMAGE_NAME } else { "panwatch" }
+# Override with your own Docker Hub namespace, e.g. $env:IMAGE_NAME = "yourname/tickerkeep"
+$imageName = if ($env:IMAGE_NAME) { $env:IMAGE_NAME } else { "tickerkeep" }
 $fullImage = "${imageName}:$Version"
 
 Push-Location $projectRoot
 try {
-    Write-Host "🚀 PanWatch 构建脚本"
+    Write-Host "🚀 TickerKeep 构建脚本"
     Write-Host "版本: $Version"
 
     Write-Host "📦 构建前端..."

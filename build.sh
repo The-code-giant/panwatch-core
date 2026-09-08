@@ -9,10 +9,10 @@ NC='\033[0m' # No Color
 
 # 默认值
 VERSION=${1:-"latest"}
-# Override with your own Docker Hub namespace, e.g. IMAGE_NAME=yourname/panwatch ./build.sh
-IMAGE_NAME="${IMAGE_NAME:-panwatch}"
+# Override with your own Docker Hub namespace, e.g. IMAGE_NAME=yourname/tickerkeep ./build.sh
+IMAGE_NAME="${IMAGE_NAME:-tickerkeep}"
 
-echo -e "${GREEN}🚀 PanWatch 构建脚本${NC}"
+echo -e "${GREEN}🚀 TickerKeep 构建脚本${NC}"
 echo -e "版本: ${YELLOW}${VERSION}${NC}"
 echo ""
 
@@ -55,7 +55,7 @@ echo ""
 echo -e "${GREEN}🎉 构建完成！${NC}"
 echo ""
 echo "运行容器:"
-echo -e "  ${YELLOW}docker run -d -p 8000:8000 -v panwatch_data:/app/data ${FULL_IMAGE}${NC}"
+echo -e "  ${YELLOW}docker run -d -p 8000:8000 -v tickerkeep_data:/app/data ${FULL_IMAGE}${NC}"
 echo ""
 echo "推送镜像:"
 echo -e "  ${YELLOW}docker push ${FULL_IMAGE}${NC}"

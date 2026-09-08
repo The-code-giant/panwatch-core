@@ -16,7 +16,7 @@ PyJWT>=2.8.0
 # Yahoo Finance is the primary quote / kline / news / events / fundamentals / holders source
 # (US, Canada, crypto, gold). Pinned to the 1.x line: the vendors parse its nested news shape.
 yfinance>=1.7,<2
-# Chart Analyst renders candlestick PNGs from PanWatch's own bars (no browser needed).
+# Chart Analyst renders candlestick PNGs from TickerKeep's own bars (no browser needed).
 matplotlib>=3.8
 # NYSE / TSX trading sessions and early closes (Apache-2.0).
 exchange_calendars>=4.5

@@ -3,7 +3,7 @@
 SEC fair-access rules: a descriptive ``User-Agent`` with a contact address, at most 10
 requests per second. The contact comes from the DataSource ``contact_email`` config, else
 the ``SEC_CONTACT_EMAIL`` environment variable, else the literal default
-``contact@panwatch.local``. Never hard-code a personal address here.
+``contact@tickerkeep.local``. Never hard-code a personal address here.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ FORM4_ATOM_URL = (
     "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={ticker}"
     "&type=4&dateb=&owner=include&count=40&output=atom"
 )
-DEFAULT_CONTACT = "contact@panwatch.local"
+DEFAULT_CONTACT = "contact@tickerkeep.local"
 
 _SEC_MIN_INTERVAL_S = 0.12  # < 10 requests/second
 _cik_cache = TTLCache(default_ttl_sec=86400.0, max_size=4)
@@ -37,7 +37,7 @@ def contact_email(config: dict | None) -> str:
 def sec_headers(config: dict | None) -> dict[str, str]:
     """Headers every SEC request must carry."""
     return {
-        "User-Agent": f"PanWatch/1.0 ({contact_email(config)})",
+        "User-Agent": f"TickerKeep/1.0 ({contact_email(config)})",
         "Accept-Encoding": "gzip, deflate",
     }
 

@@ -1,4 +1,4 @@
-"""把 PanWatch 的 PortfolioInfo 渲染成 TradingAgents past_context 文本。
+"""把 TickerKeep 的 PortfolioInfo 渲染成 TradingAgents past_context 文本。
 
 TradingAgents 上游设计 past_context 是 PM 节点的扩展通道
 (见 tradingagents/agents/managers/portfolio_manager.py:35-40):
@@ -78,7 +78,7 @@ def build_portfolio_context(
     current_price: float | None = None,
     stock_market: str | None = None,
 ) -> str:
-    """从 PanWatch PortfolioInfo 渲染该股票 + 账户的个性化上下文文本。
+    """从 TickerKeep PortfolioInfo 渲染该股票 + 账户的个性化上下文文本。
 
     Args:
         portfolio: AgentContext.portfolio (PortfolioInfo 实例)

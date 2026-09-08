@@ -51,7 +51,7 @@ def test_sec_filings_default_forms(monkeypatch):
     assert f.url == "https://www.sec.gov/Archives/edgar/data/320193/000032019324000108/aapl-20241031.htm"
     assert out[0].title == "4: FORM 4"
     headers = calls[-1][1]["headers"]
-    assert headers["User-Agent"].startswith("PanWatch/1.0 (")
+    assert headers["User-Agent"].startswith("TickerKeep/1.0 (")
 
 
 def test_sec_filings_forms_config_and_limit(monkeypatch):

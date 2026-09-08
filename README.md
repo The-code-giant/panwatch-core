@@ -1,6 +1,6 @@
 <div align="center">
 
-# PanWatch
+# TickerKeep
 
 **A self-hosted stock research assistant for US & Canadian markets.**
 
@@ -13,7 +13,7 @@ staying in your own database.
 [![Node 24](https://img.shields.io/badge/node-24-brightgreen.svg)](frontend/package.json)
 [![Self-hosted](https://img.shields.io/badge/deploy-docker-2496ED.svg)](#quick-start)
 
-<img src="docs/screenshots/today.jpg" alt="PanWatch Today dashboard showing holdings, open P&L, a book-value chart against the S&P 500, and market indices" width="100%">
+<img src="docs/screenshots/today.jpg" alt="TickerKeep Today dashboard showing holdings, open P&L, a book-value chart against the S&P 500, and market indices" width="100%">
 
 </div>
 
@@ -21,7 +21,7 @@ staying in your own database.
 
 ## What it is
 
-PanWatch runs entirely on your hardware. It pulls market data, keeps your
+TickerKeep runs entirely on your hardware. It pulls market data, keeps your
 positions, and — if you give it an API key for a model you already pay for —
 runs scheduled agents that write you a pre-market outlook, monitor the session,
 and produce a post-market review.
@@ -40,7 +40,7 @@ shown as *unpriced* rather than guessed at.
 | <img src="docs/screenshots/portfolio.jpg" alt="Portfolio page showing a US position and a CAD position with native currency preserved and USD conversion shown separately"> | <img src="docs/screenshots/agents.jpg" alt="Agents page listing Premarket Outlook, Intraday Monitor, Post-market Review and TradingAgents Deep Analysis with their schedules"> |
 
 <div align="center">
-<img src="docs/screenshots/mobile-portfolio.jpg" alt="PanWatch portfolio on a 390px mobile viewport" width="330">
+<img src="docs/screenshots/mobile-portfolio.jpg" alt="TickerKeep portfolio on a 390px mobile viewport" width="330">
 <br><em>Responsive down to 390px.</em>
 </div>
 
@@ -85,18 +85,18 @@ personal access token.
 Requires Docker.
 
 ```sh
-git clone https://github.com/The-code-giant/panwatch-core.git
-cd panwatch-core
+git clone https://github.com/The-code-giant/tickerkeep-core.git
+cd tickerkeep-core
 cp .env.example .env
-docker compose -p panwatch build
-docker compose -p panwatch up -d
+docker compose -p tickerkeep build
+docker compose -p tickerkeep up -d
 ```
 
 Open **http://127.0.0.1:18080** and log in.
 
 > [!IMPORTANT]
 > Set `AUTH_USERNAME`, `AUTH_PASSWORD` and `JWT_SECRET` in `.env` **before the
-> first start**. Until a password exists, PanWatch does not require a login —
+> first start**. Until a password exists, TickerKeep does not require a login —
 > which is harmless on a loopback bind and an open instance on any other. The
 > credentials seed the account once; change the password from Settings afterwards.
 
@@ -189,8 +189,11 @@ Please run the test suite before opening a PR.
 
 ## License
 
-[MIT](LICENSE). PanWatch is a fork; the inherited MIT notice
-(`Copyright (c) 2026 sunxiao0721`) is retained as that licence requires.
+[MIT](LICENSE) — Copyright (c) 2026 The Code Giant.
+
+TickerKeep began as a fork of an MIT-licensed upstream project. That author's
+notice is reproduced in full in [NOTICE](NOTICE), which ships with every copy,
+as the MIT License requires.
 
 Third-party components, their licences and required attributions are recorded in
 [NOTICE-THIRD-PARTY.md](NOTICE-THIRD-PARTY.md) and [NOTICE](NOTICE). Charts are

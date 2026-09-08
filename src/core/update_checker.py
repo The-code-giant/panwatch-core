@@ -178,7 +178,7 @@ def _human_error(err: str | None) -> str | None:
 def check_update(current_version: str, proxy: str | None = None) -> dict[str, object]:
     # No default here: a fork must not phone home to the upstream project's
     # Docker Hub repo. Update checking stays disabled until the operator sets
-    # UPDATE_CHECK_DOCKER_REPO (e.g. "yourname/panwatch") explicitly.
+    # UPDATE_CHECK_DOCKER_REPO (e.g. "yourname/tickerkeep") explicitly.
     repo = os.getenv("UPDATE_CHECK_DOCKER_REPO", "").strip()
     force_disable = os.getenv("UPDATE_CHECK_DISABLE", "").strip() in {"1", "true", "True"}
     if force_disable or not repo:

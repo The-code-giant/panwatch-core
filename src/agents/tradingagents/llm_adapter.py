@@ -1,8 +1,8 @@
-"""桥接 PanWatch AIClient 配置 → TradingAgents LLM config。
+"""桥接 TickerKeep AIClient 配置 → TradingAgents LLM config。
 
 TradingAgents 通过 langchain-openai / langchain-anthropic 等驱动 LLM,
 读取 config 字典 + 环境变量(`OPENAI_API_KEY`/`DEEPSEEK_API_KEY` 等)。
-本模块把 PanWatch 的 AIClient 配置桥接过去。
+本模块把 TickerKeep 的 AIClient 配置桥接过去。
 """
 
 from __future__ import annotations
@@ -32,9 +32,9 @@ def build_ta_llm_config(
     """生成 TradingAgents 期望的 config dict。
 
     继承 tradingagents.default_config.DEFAULT_CONFIG (含 data_cache_dir / project_dir /
-    memory_log_path 等必需字段),再覆盖 PanWatch 配置:
+    memory_log_path 等必需字段),再覆盖 TickerKeep 配置:
     - llm_provider: 统一走 openrouter 兼容协议(走 chat completions,避开 OpenAI Responses API)
-    - backend_url: PanWatch AI 服务的 base_url
+    - backend_url: TickerKeep AI 服务的 base_url
     - deep_think_llm: 推理/辩论/风控/PM 用的"强模型"。默认走 ai_client.model;
       可由 deep_model 参数覆盖,允许辩论用 claude-sonnet / o3 这种贵但准的模型
     - quick_think_llm: 分析师工具调用用的"快模型"。默认 deep_model;
@@ -61,12 +61,12 @@ def build_ta_llm_config(
     except ImportError:
         config = {}
 
-    # PanWatch 覆盖。
+    # TickerKeep 覆盖。
     # ⚠️ llm_provider 故意不用 "openai":TA 检测到 openai 会强制开 use_responses_api=True
     # (OpenAI Responses API,/v1/responses 端点),硅基流动/智谱/Ollama 等第三方 OpenAI 兼容
     # 服务不支持这个端点,会 404。
     # 用 "openrouter" 走标准 chat completions (/v1/chat/completions),同时 backend_url
-    # 覆盖默认 openrouter 端点为 PanWatch 配置的真实 base_url。
+    # 覆盖默认 openrouter 端点为 TickerKeep 配置的真实 base_url。
     # 双模型解析:
     # - deep_model 未指定 → 用 ai_client.model
     # - quick_model 未指定 → 用 deep_model(单模型场景退化)
@@ -89,11 +89,11 @@ def build_ta_llm_config(
 
 
 def inject_api_key_env(ai_client: AIClient) -> None:
-    """把 PanWatch AI 服务的 API key 注入到环境变量。
+    """把 TickerKeep AI 服务的 API key 注入到环境变量。
 
     TradingAgents llm_clients 按 provider 读不同 env var
     (OPENAI_API_KEY / DEEPSEEK_API_KEY / OPENROUTER_API_KEY 等)。
-    我们 PanWatch 走 openrouter 兼容模式(chat completions),所以注入
+    我们 TickerKeep 走 openrouter 兼容模式(chat completions),所以注入
     OPENROUTER_API_KEY。同时也设 OPENAI_API_KEY 作 fallback。
 
     注意:这是进程级 env var,如果同进程并发跑多个不同 key 的请求,可能竞态。

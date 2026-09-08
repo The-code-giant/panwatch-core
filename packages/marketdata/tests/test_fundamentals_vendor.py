@@ -174,7 +174,7 @@ def test_sec_companyfacts_mapping(monkeypatch):
     assert f.pe_ttm is None and f.total_market_value is None and f.pb is None
     # SEC headers: contact from config, never a hard-coded personal address.
     headers = calls[0][1]["headers"]
-    assert headers["User-Agent"] == "PanWatch/1.0 (ops@example.org)"
+    assert headers["User-Agent"] == "TickerKeep/1.0 (ops@example.org)"
 
 
 def test_sec_cik_resolution_brk_b(monkeypatch):
@@ -195,10 +195,10 @@ def test_sec_cik_resolution_brk_b(monkeypatch):
 def test_sec_default_contact_and_env(monkeypatch):
     """The User-Agent contact falls back to SEC_CONTACT_EMAIL, then to the neutral default."""
     monkeypatch.delenv("SEC_CONTACT_EMAIL", raising=False)
-    assert sec.sec_headers({})["User-Agent"] == "PanWatch/1.0 (contact@panwatch.local)"
+    assert sec.sec_headers({})["User-Agent"] == "TickerKeep/1.0 (contact@tickerkeep.local)"
     monkeypatch.setenv("SEC_CONTACT_EMAIL", "sec@example.org")
-    assert sec.sec_headers({})["User-Agent"] == "PanWatch/1.0 (sec@example.org)"
-    assert sec.sec_headers({"contact_email": "cfg@example.org"})["User-Agent"] == "PanWatch/1.0 (cfg@example.org)"
+    assert sec.sec_headers({})["User-Agent"] == "TickerKeep/1.0 (sec@example.org)"
+    assert sec.sec_headers({"contact_email": "cfg@example.org"})["User-Agent"] == "TickerKeep/1.0 (cfg@example.org)"
 
 
 def test_sec_facts_download_failure_is_empty(monkeypatch):

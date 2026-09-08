@@ -125,7 +125,7 @@ def test_edgar_form4_atom(monkeypatch):
     assert b.holder == "Levinson Arthur D" and b.transaction == "Form 4/A" and b.date == "2024-09-16"
     url, kw = calls[0]
     assert "CIK=AAPL" in url and "type=4" in url and "output=atom" in url
-    assert kw["headers"]["User-Agent"] == "PanWatch/1.0 (ops@example.org)" and kw["parse"] == "text"
+    assert kw["headers"]["User-Agent"] == "TickerKeep/1.0 (ops@example.org)" and kw["parse"] == "text"
 
 
 def test_edgar_form4_symbol_spelling_and_failures(monkeypatch):

@@ -1,6 +1,6 @@
-import { DEFAULT_MARKET } from '@panwatch/api/markets'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@panwatch/base-ui/components/ui/dialog'
-import InteractiveKline from '@panwatch/biz-ui/components/InteractiveKline'
+import { DEFAULT_MARKET } from '@tickerkeep/api/markets'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import InteractiveKline from '@tickerkeep/biz-ui/components/InteractiveKline'
 
 export default function KlineModal(props: {
   open: boolean

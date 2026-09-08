@@ -1,9 +1,9 @@
-"""TradingAgentsAgent — PanWatch 的 BaseAgent 子类,集成 TauricResearch/TradingAgents。
+"""TradingAgentsAgent — TickerKeep 的 BaseAgent 子类,集成 TauricResearch/TradingAgents。
 
 设计要点(详见 .docs/tradingagents/02-technical-design.md):
 1. collect() 走 marketdata 包,5 类数据并发拉(quote / kline / fundamentals / holders / events)
 2. analyze() 重写,不走单次 ai_client.chat,而是调 TradingAgentsGraph
-3. monkeypatch route_to_vendor 让 TradingAgents 拿到 PanWatch 数据
+3. monkeypatch route_to_vendor 让 TradingAgents 拿到 TickerKeep 数据
 4. progress callback + cost tracker + 月度预算 + 同日缓存
 """
 
@@ -31,10 +31,10 @@ from src.agents.tradingagents.portfolio_context import (
     build_stock_metadata_context,
     patch_propagator,
 )
-from src.agents.tradingagents.progress import PanWatchProgressHandler
+from src.agents.tradingagents.progress import TickerKeepProgressHandler
 from src.agents.tradingagents.result_mapper import map_state_to_result
 from src.agents.tradingagents.toolkit_adapter import (
-    panwatch_data_context,
+    tickerkeep_data_context,
     patch_route_to_vendor,
 )
 from src.core.analysis_history import get_analysis, save_analysis
@@ -104,7 +104,7 @@ class TradingAgentsAgent(BaseAgent):
     # ---- BaseAgent 抽象方法 ----
 
     async def collect(self, context: AgentContext) -> dict:
-        """从 PanWatch 数据体系收集数据,并发拉 5 类(走 marketdata 包)。"""
+        """从 TickerKeep 数据体系收集数据,并发拉 5 类(走 marketdata 包)。"""
         if not context.watchlist:
             raise ValueError("TradingAgents requires at least 1 stock")
         # 单只标的为粒度;若 watchlist 多只,取第一只
@@ -252,7 +252,7 @@ class TradingAgentsAgent(BaseAgent):
         )
 
         # 3) 进度回调
-        progress_handler = PanWatchProgressHandler(trace_id, self.name)
+        progress_handler = TickerKeepProgressHandler(trace_id, self.name)
 
         # 4) 渲染上下文(标的元信息 + 用户持仓)注入到 TA 的 past_context 通道
         current_price = (data.get("quote") or {}).get("current_price")
@@ -287,7 +287,7 @@ class TradingAgentsAgent(BaseAgent):
                     market=stock.market.value,
                     ta_config=ta_config,
                     progress_handler=progress_handler,
-                    panwatch_data=data,
+                    tickerkeep_data=data,
                     portfolio_context_text=portfolio_context_text,
                 ),
                 timeout=self.timeout_minutes * 60,
@@ -454,14 +454,14 @@ class TradingAgentsAgent(BaseAgent):
         market: str,
         ta_config: dict,
         progress_handler,
-        panwatch_data: dict,
+        tickerkeep_data: dict,
         portfolio_context_text: str = "",
     ) -> dict[str, Any]:
         """在 worker 线程跑同步 TradingAgents 流程。
 
         步骤:
         1. inject_api_key_env 注入 API key 到环境变量
-        2. patch_route_to_vendor 让工具请求拿到 PanWatch 缓存数据(财务摘要 / 持股 / K线)
+        2. patch_route_to_vendor 让工具请求拿到 TickerKeep 缓存数据(财务摘要 / 持股 / K线)
         3. TradingAgentsGraph.propagate 跑 3-5 分钟
         4. 返回 decision + final_state + cost_usd
         """
@@ -473,9 +473,9 @@ class TradingAgentsAgent(BaseAgent):
         apply_compat_patches()
         inject_api_key_env(ai_client)
 
-        # patch + 数据上下文,确保 TradingAgents 调 route_to_vendor 时拿到 PanWatch 数据
+        # patch + 数据上下文,确保 TradingAgents 调 route_to_vendor 时拿到 TickerKeep 数据
         trace_id_for_ctx = getattr(progress_handler, "trace_id", "") if progress_handler else ""
-        with patch_route_to_vendor(), panwatch_data_context(panwatch_data, trace_id=trace_id_for_ctx):
+        with patch_route_to_vendor(), tickerkeep_data_context(tickerkeep_data, trace_id=trace_id_for_ctx):
             graph = TradingAgentsGraph(
                 selected_analysts=ta_config["selected_analysts"],
                 debug=False,

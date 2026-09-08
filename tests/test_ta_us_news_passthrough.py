@@ -1,6 +1,6 @@
 """get_news 路由:ticker 透传上游(Yahoo),自由文本行业/主题词才走 Google News 关键词搜索。
 
-回归 bug:0.3.0 新闻分析师对美股 ticker(BABA)调 get_news,原逻辑只判 `not is_panwatch_routable`,
+回归 bug:0.3.0 新闻分析师对美股 ticker(BABA)调 get_news,原逻辑只判 `not is_tickerkeep_routable`,
 把美股 ticker 也送进关键词搜索 → 搜不到 → 返回空结果,美股拿不到个股新闻。
 修复:关键词分支用 `_looks_like_keyword_query`(不是 1-12 位 ticker 字符才算关键词),
 纯 ticker(AAPL / SHOP.TO / BRK-B / ^GSPC)落到上游透传。

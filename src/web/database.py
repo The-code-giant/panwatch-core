@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 # database — without changing default self-host behavior when DATA_DIR is unset.
 _DATA_DIR = os.environ.get("DATA_DIR")
 if _DATA_DIR:
-    DB_PATH = os.path.join(_DATA_DIR, "panwatch.db")
+    DB_PATH = os.path.join(_DATA_DIR, "tickerkeep.db")
 else:
-    DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "panwatch.db")
+    DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "tickerkeep.db")
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 engine = create_engine(

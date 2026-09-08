@@ -21,7 +21,7 @@
    每条仓位必须拿到自己市场的报价,绝不能互相污染
    ——这正是 `accounts.py` 原来 `quotes.get(stock.symbol)` 单键 bug 的回归用例。
 
-隔离说明:本模块绝不连接真实数据库文件(`data/panwatch.db`)。每个用例都在全新的
+隔离说明:本模块绝不连接真实数据库文件(`data/tickerkeep.db`)。每个用例都在全新的
 `sqlite:///:memory:` 引擎(`StaticPool` + `check_same_thread=False`)上建表并插入
 真实的 `Account`/`Stock`/`Position` ORM 行,再把这个内存 `Session` 直接作为关键字参数
 传给真实的 `get_portfolio_summary(db=...)`——由于 FastAPI 的 `Depends(get_db)` 只是
@@ -66,7 +66,7 @@ def _no_network(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# 独立内存 sqlite 隔离:绝不碰真实 data/panwatch.db
+# 独立内存 sqlite 隔离:绝不碰真实 data/tickerkeep.db
 # ---------------------------------------------------------------------------
 
 

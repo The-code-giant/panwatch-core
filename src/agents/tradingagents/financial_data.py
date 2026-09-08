@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import Any
 
-SOURCE_HEADER = "[Financial data from PanWatch (Yahoo Finance / SEC EDGAR)]"
+SOURCE_HEADER = "[Financial data from TickerKeep (Yahoo Finance / SEC EDGAR)]"
 
 # (indicator label, Fundamentals attribute, kind) — kind: "money" | "pct" | "ratio" | "count"
 _INDICATOR_SPECS: tuple[tuple[str, str, str], ...] = (

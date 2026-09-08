@@ -1,6 +1,6 @@
 {
-  "name": "PanWatch",
-  "short_name": "PanWatch",
+  "name": "TickerKeep",
+  "short_name": "TickerKeep",
   "description": "AI-powered stock monitoring assistant",
   "start_url": "/",
   "display": "standalone",

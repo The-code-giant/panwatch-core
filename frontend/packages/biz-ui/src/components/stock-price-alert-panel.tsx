@@ -1,11 +1,11 @@
-import { DEFAULT_MARKET } from '@panwatch/api/markets'
+import { DEFAULT_MARKET } from '@tickerkeep/api/markets'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Bell, Plus, Pencil, Trash2 } from 'lucide-react'
-import { fetchAPI, stocksApi, type NotifyChannel } from '@panwatch/api'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@panwatch/base-ui/components/ui/dialog'
-import PriceAlertFormDialog, { type AlertConditionItem, type PriceAlertFormState, type PriceAlertSubmitPayload } from '@panwatch/biz-ui/components/price-alert-form-dialog'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
+import { fetchAPI, stocksApi, type NotifyChannel } from '@tickerkeep/api'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@tickerkeep/base-ui/components/ui/dialog'
+import PriceAlertFormDialog, { type AlertConditionItem, type PriceAlertFormState, type PriceAlertSubmitPayload } from '@tickerkeep/biz-ui/components/price-alert-form-dialog'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 
 interface StockItem {
   id: number

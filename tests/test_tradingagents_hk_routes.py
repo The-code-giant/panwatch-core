@@ -3,7 +3,7 @@
 策略:
 1. 港股 ticker(5 位数字)→ 先转 yfinance 格式(0241.HK)试上游
 2. yfinance 拿到真实数据 → 用 yfinance 返回
-3. yfinance 无数据(返回"No data found"或极短)→ fallback 到 PanWatch
+3. yfinance 无数据(返回"No data found"或极短)→ fallback 到 TickerKeep
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from src.agents.tradingagents.toolkit_adapter import (
     hk_symbol_to_yfinance,
     is_a_share,
     is_hk_share,
-    is_panwatch_routable,
-    panwatch_data_context,
+    is_tickerkeep_routable,
+    tickerkeep_data_context,
 )
 
 
@@ -44,10 +44,10 @@ def test_is_hk_share_rejects_6_digits_and_letters():
     assert is_hk_share("0241.HK") is False
 
 
-def test_is_panwatch_routable_covers_a_and_hk():
-    assert is_panwatch_routable("601127") is True
-    assert is_panwatch_routable("00241") is True
-    assert is_panwatch_routable("AAPL") is False
+def test_is_tickerkeep_routable_covers_a_and_hk():
+    assert is_tickerkeep_routable("601127") is True
+    assert is_tickerkeep_routable("00241") is True
+    assert is_tickerkeep_routable("AAPL") is False
 
 
 # ============================================================

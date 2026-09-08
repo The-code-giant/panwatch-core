@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { Check, Eye, EyeOff, Plus, Pencil, Trash2, Star, Send, Cpu, Play, Download, Upload, FileJson, BarChart3, User, Radar } from 'lucide-react'
-import { fetchAPI, type AIService, type AIModel, type NotifyChannel } from '@panwatch/api'
+import { fetchAPI, type AIService, type AIModel, type NotifyChannel } from '@tickerkeep/api'
 import { useAvatar, saveAvatar, fileToAvatarDataUrl } from '@/hooks/use-avatar'
 import PatSection from '@/components/PatSection'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { Label } from '@panwatch/base-ui/components/ui/label'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@panwatch/base-ui/components/ui/dialog'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@panwatch/base-ui/components/ui/select'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@panwatch/base-ui/components/ui/card'
-import { InfoTip } from '@panwatch/base-ui/components/ui/tooltip'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { Label } from '@tickerkeep/base-ui/components/ui/label'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@tickerkeep/base-ui/components/ui/select'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@tickerkeep/base-ui/components/ui/card'
+import { InfoTip } from '@tickerkeep/base-ui/components/ui/tooltip'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
 
 interface Setting {
   key: string
@@ -251,7 +251,7 @@ function SettingsSkeleton() {
 const SETTING_META: Record<string, { label: string; helper: string }> = {
   http_proxy: {
     label: 'HTTP Proxy',
-    helper: 'Routes all outbound requests - quotes, news, AI calls, and notification pushes - through this proxy. Set it if PanWatch runs somewhere that needs one to reach the internet.',
+    helper: 'Routes all outbound requests - quotes, news, AI calls, and notification pushes - through this proxy. Set it if TickerKeep runs somewhere that needs one to reach the internet.',
   },
   notify_quiet_hours: {
     label: 'Quiet Hours',
@@ -271,11 +271,11 @@ const SETTING_META: Record<string, { label: string; helper: string }> = {
   },
   stock_link_platform: {
     label: 'Stock Link Platform',
-    helper: 'The quote site opened when you click a stock symbol elsewhere in PanWatch.',
+    helper: 'The quote site opened when you click a stock symbol elsewhere in TickerKeep.',
   },
-  panwatch_base_url: {
+  tickerkeep_base_url: {
     label: 'Public Base URL',
-    helper: 'Your PanWatch instance’s public URL (e.g. https://panwatch.example.com). Set it so links to analysis detail pages inside notifications resolve correctly.',
+    helper: 'Your TickerKeep instance’s public URL (e.g. https://tickerkeep.example.com). Set it so links to analysis detail pages inside notifications resolve correctly.',
   },
 }
 
@@ -436,7 +436,7 @@ export default function SettingsPage() {
     try {
       const data = await fetchAPI<TemplatePayload>('/templates/export')
       const date = new Date().toISOString().slice(0, 10)
-      downloadJson(`panwatch-config-${date}.json`, data)
+      downloadJson(`tickerkeep-config-${date}.json`, data)
       toast('Config pack exported', 'success')
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Export failed', 'error')
@@ -1002,7 +1002,7 @@ export default function SettingsPage() {
               size="sm"
               icon={Send}
               title="No notification channels yet"
-              description="Add a channel and PanWatch can push alerts to Telegram, Bark, Discord, and others."
+              description="Add a channel and TickerKeep can push alerts to Telegram, Bark, Discord, and others."
               action={
                 <button type="button" className="btn-primary" onClick={() => openChannelDialog()}>
                   <Plus className="w-3.5 h-3.5" /> Add
@@ -1556,7 +1556,7 @@ export default function SettingsPage() {
       {/* Version Footer */}
       {version && (
         <div className="mt-8 text-center text-[11px] text-muted-foreground/60">
-          PanWatch v{version}
+          TickerKeep v{version}
         </div>
       )}
     </div>

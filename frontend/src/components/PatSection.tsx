@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Copy, Plus, Trash2, KeyRound } from 'lucide-react'
-import { patsApi, type PatItem } from '@panwatch/api'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
+import { patsApi, type PatItem } from '@tickerkeep/api'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 
 /**
  * MCP access token (PAT) management.
  *
- * Tokens are used by MCP clients like Claude to connect to PanWatch's MCP endpoint (/mcp).
+ * Tokens are used by MCP clients like Claude to connect to TickerKeep's MCP endpoint (/mcp).
  * The plaintext token is returned only once, at creation; the list only shows the prefix.
  */
 export default function PatSection() {

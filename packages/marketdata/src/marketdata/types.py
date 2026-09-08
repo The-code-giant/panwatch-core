@@ -50,7 +50,7 @@ class Quote:
 
 @dataclass
 class Bar:
-    """标准化日K(对齐 PanWatch KlineData:date/open/close/high/low/volume)。"""
+    """标准化日K(对齐 TickerKeep KlineData:date/open/close/high/low/volume)。"""
 
     date: str
     open: float
@@ -62,7 +62,7 @@ class Bar:
 
 @dataclass(frozen=True)
 class HotStock:
-    """热门/异动股(对齐 PanWatch src/collectors/discovery_collector.HotStock)。"""
+    """热门/异动股(对齐 TickerKeep src/collectors/discovery_collector.HotStock)。"""
 
     symbol: str
     market: str
@@ -75,7 +75,7 @@ class HotStock:
 
 @dataclass(frozen=True)
 class HotBoard:
-    """热门板块(对齐 PanWatch src/collectors/discovery_collector.HotBoard)。"""
+    """热门板块(对齐 TickerKeep src/collectors/discovery_collector.HotBoard)。"""
 
     code: str
     name: str
@@ -163,7 +163,7 @@ class FlashNews:
 
 @dataclass
 class NewsArticle:
-    """Symbol news (aligned with PanWatch src/collectors/news_collector.NewsItem).
+    """Symbol news (aligned with TickerKeep src/collectors/news_collector.NewsItem).
     ``source`` is the vendor name (yfinance / google_news); ``publisher`` is the outlet
     that wrote the story (Reuters, Bloomberg, ...)."""
 

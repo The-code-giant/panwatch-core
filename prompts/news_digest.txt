@@ -20,9 +20,9 @@ Requirements:
 
 10. At the very end of the text, append a JSON block for program parsing (must be valid JSON, using double quotes; do not wrap it in a Markdown code block).
 Output format (must include the tags exactly as shown):
-<!--PANWATCH_JSON-->
+<!--TICKERKEEP_JSON-->
 {...}
-<!--/PANWATCH_JSON-->
+<!--/TICKERKEEP_JSON-->
 
 JSON Schema (field descriptions):
 - suggestions: array, must have exactly 1 entry per watchlist stock
@@ -35,7 +35,7 @@ JSON Schema (field descriptions):
   - invalidations: array of invalidation conditions (up to 2)
   - risks: array of risk points (up to 3)
 
-Note: the JSON block must be placed at the very end of the text, and nothing may be output after <!--/PANWATCH_JSON-->.
+Note: the JSON block must be placed at the very end of the text, and nothing may be output after <!--/TICKERKEEP_JSON-->.
 
 Note:
 - Prioritize analyzing news directly related to the user's watchlist; important market news (market headlines from CNBC, MarketWatch, Financial Post, BNN Bloomberg, etc.) is only used to supplement overall sentiment/sector impact

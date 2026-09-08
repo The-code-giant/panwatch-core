@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "panwatch-core"
+name = "tickerkeep-core"
 version = "0.0.0.dev0"
-description = "Self-hosted PanWatch backend (development export)"
+description = "Self-hosted TickerKeep backend (development export)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}

@@ -1,21 +1,21 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { Routes, Route, NavLink, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/use-theme'
-import { appApi, fetchAPI, homeApi, isAuthenticated } from '@panwatch/api'
+import { appApi, fetchAPI, homeApi, isAuthenticated } from '@tickerkeep/api'
 import { isMarketingPath } from '@/marketing/routes'
 import Rail from '@/components/shell/Rail'
 import TopBar from '@/components/shell/TopBar'
 import RoomShell from '@/components/shell/RoomShell'
 import { ROOMS, LEGACY_REDIRECTS, roomForPath } from '@/components/shell/rooms'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@panwatch/base-ui/components/ui/dialog'
-import { Button } from '@panwatch/base-ui/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
 
 // Every page is its own chunk, so the public marketing home does not download
 // the app, and the app does not download the marketing site.
 const MarketingRoutes = lazy(() => import('@/marketing'))
 // Heavy app-only overlays (markdown chat, logs, self-check, command palette)
 // load after the shell, so the public pages never download them.
-const LogsModal = lazy(() => import('@panwatch/biz-ui/components/logs-modal'))
+const LogsModal = lazy(() => import('@tickerkeep/biz-ui/components/logs-modal'))
 const ChatWidget = lazy(() => import('@/components/ChatWidget'))
 const SelfCheckModal = lazy(() => import('@/components/SelfCheckModal'))
 const CommandPalette = lazy(() => import('@/components/shell/CommandPalette'))
@@ -97,7 +97,7 @@ function App() {
         const latest = String(res?.latest_version || '').trim()
         const shouldOpen = !!res?.update_available && !!latest
         if (!shouldOpen) return
-        const dismissed = localStorage.getItem('panwatch_upgrade_dismissed_version') || ''
+        const dismissed = localStorage.getItem('tickerkeep_upgrade_dismissed_version') || ''
         if (dismissed === latest) return
         setUpgradeInfo({ latest, url: String(res?.release_url || '') })
         setUpgradeOpen(true)
@@ -262,7 +262,7 @@ function App() {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  if (upgradeInfo?.latest) localStorage.setItem('panwatch_upgrade_dismissed_version', upgradeInfo.latest)
+                  if (upgradeInfo?.latest) localStorage.setItem('tickerkeep_upgrade_dismissed_version', upgradeInfo.latest)
                   setUpgradeOpen(false)
                 }}
               >

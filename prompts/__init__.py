@@ -1,1 +1,1 @@
-"""Prompt resources shipped alongside the PanWatch backend wheel."""
+"""Prompt resources shipped alongside the TickerKeep backend wheel."""

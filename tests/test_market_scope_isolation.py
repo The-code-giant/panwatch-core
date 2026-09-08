@@ -14,12 +14,12 @@
 - 第 2、3 部分把 `src.core.strategy_engine` / `src.core.strategy_catalog` / `server`
   模块内部引用的 `SessionLocal` 替换成绑定到全新内存 sqlite 引擎的 sessionmaker
   （与 tests/test_discovery_api.py、tests/test_factor_calibration_loop.py、
-  tests/test_datasource_reconcile.py 中"独立内存 sqlite，不碰真实 data/panwatch.db"
+  tests/test_datasource_reconcile.py 中"独立内存 sqlite，不碰真实 data/tickerkeep.db"
   的隔离手法一致）。
 
 准确说明：本模块确实会 `from src.web.database import Base`（仅为拿到 ORM 元数据建表），
 该导入会让 `src/web/database.py` 在模块级构造 `engine` 对象，但 SQLAlchemy 的
-`create_engine` 是惰性的——不建立连接、不创建也不写入 `data/panwatch.db`。真正被查询
+`create_engine` 是惰性的——不建立连接、不创建也不写入 `data/tickerkeep.db`。真正被查询
 的 `SessionLocal` 已全部换成绑定内存引擎的 sessionmaker。请注意 `tests/conftest.py`
 的 session 级 `_ensure_db_schema` fixture 会对"当前源码树相对路径"下的 db 执行
 `create_all`，因此产品迁移类验证应在一次性副本中运行（见 docs/product/PROGRESS.md）。
@@ -184,7 +184,7 @@ from src.models.market import ENABLED_MARKETS  # noqa: E402
 
 @pytest.fixture
 def mem_session_factory(monkeypatch):
-    """独立内存 sqlite(不碰真实 data/panwatch.db):把 strategy_engine/strategy_catalog
+    """独立内存 sqlite(不碰真实 data/tickerkeep.db):把 strategy_engine/strategy_catalog
     模块内部引用的 SessionLocal 换成绑定到本地全新引擎的 sessionmaker。"""
     from src.web import models as _models  # noqa: F401  确保所有 ORM 模型注册到 Base.metadata
     from src.web.database import Base
@@ -256,7 +256,7 @@ import server  # noqa: E402  已有先例:tests/test_datasource_reconcile.py 同
 
 @pytest.fixture
 def mem_server_session_factory(monkeypatch):
-    """独立内存 sqlite(不碰真实 data/panwatch.db):把 server 模块内部引用的 SessionLocal
+    """独立内存 sqlite(不碰真实 data/tickerkeep.db):把 server 模块内部引用的 SessionLocal
     换成绑定到本地全新引擎的 sessionmaker。"""
     from src.web import models as _models  # noqa: F401
     from src.web.database import Base

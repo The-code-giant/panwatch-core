@@ -1,5 +1,5 @@
-// PanWatch Service Worker
-const CACHE_NAME = 'panwatch-v2';
+// TickerKeep Service Worker
+const CACHE_NAME = 'tickerkeep-v2';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [

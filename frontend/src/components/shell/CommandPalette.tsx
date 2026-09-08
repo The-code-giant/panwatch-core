@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, CornerDownLeft, type LucideIcon } from 'lucide-react'
-import { stocksApi } from '@panwatch/api'
+import { stocksApi } from '@tickerkeep/api'
 import { ROOMS } from './rooms'
 
 interface Item {

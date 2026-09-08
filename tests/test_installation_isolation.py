@@ -9,7 +9,7 @@ from src.web.database import DB_PATH
 # Deliberately checked during collection, before any autouse fixture can repair
 # a configuration or database that was imported with installation paths.
 _data_dir = Path(os.environ["DATA_DIR"])
-assert _data_dir.name.startswith("panwatch-pytest-")
+assert _data_dir.name.startswith("tickerkeep-pytest-")
 assert Path(DB_PATH).resolve().parent == _data_dir.resolve()
 assert Path(Settings.model_config["env_file"]).parent == _data_dir
 assert not Path(Settings.model_config["env_file"]).exists()

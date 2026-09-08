@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { Search, Trash2, RefreshCw, ScrollText, ChevronDown } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@panwatch/base-ui/components/ui/dialog'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { fetchAPI, subscribeSSE } from '@panwatch/api'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { fetchAPI, subscribeSSE } from '@tickerkeep/api'
 import { mapLoggerName, loggerOptions } from '@/lib/logger-map'
 import { useLocalStorage } from '@/lib/utils'
 
@@ -67,7 +67,7 @@ const FLOW_PRESETS: Array<{ key: string, label: string, loggers: string[] }> = [
   {
     key: 'tradingagents',
     label: 'Deep Analysis',
-    // The 'tradingagents' substring matches both the PanWatch adapter layer (src.agents.tradingagents.*) and upstream (tradingagents.*)
+    // The 'tradingagents' substring matches both the TickerKeep adapter layer (src.agents.tradingagents.*) and upstream (tradingagents.*)
     loggers: ['tradingagents', 'src.agents.base', 'src.core.scheduler', 'src.core.notifier'],
   },
 ]
@@ -87,8 +87,8 @@ export default function LogsModal({ open, onOpenChange }: { open: boolean, onOpe
   const [timeRange, setTimeRange] = useState(0)
   const [selectedLoggers, setSelectedLoggers] = useState<string[]>([])
   const [selectedFlow, setSelectedFlow] = useState('')
-  const [domain, setDomain] = useLocalStorage<'business' | 'all' | 'infra'>('panwatch_logs_modal_domain', 'business')
-  const [autoRefresh, setAutoRefresh] = useLocalStorage('panwatch_logs_modal_autoRefresh', false)
+  const [domain, setDomain] = useLocalStorage<'business' | 'all' | 'infra'>('tickerkeep_logs_modal_domain', 'business')
+  const [autoRefresh, setAutoRefresh] = useLocalStorage('tickerkeep_logs_modal_autoRefresh', false)
   const [showAllLoggerFilters, setShowAllLoggerFilters] = useState(false)
   const [hasMore, setHasMore] = useState(false)
   const [beforeId, setBeforeId] = useState<number>(0)

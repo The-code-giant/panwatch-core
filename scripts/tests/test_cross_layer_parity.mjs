@@ -50,7 +50,7 @@
 //   4. Run this script with that path:
 //          node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs /path/to/summary.json
 //      or:
-//          PANWATCH_SUMMARY_JSON=/path/to/summary.json node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs
+//          TICKERKEEP_SUMMARY_JSON=/path/to/summary.json node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs
 //
 //   Prefer a portfolio that mixes US + CA positions, at least one unpriced
 //   position, and at least one position with a genuine zero price or zero
@@ -114,14 +114,14 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const modulePath = path.resolve(here, '..', '..', 'frontend', 'src', 'lib', 'portfolio-valuation.ts')
 const moduleUrl = pathToFileURL(modulePath).href
 
-const summaryPath = process.argv[2] || process.env.PANWATCH_SUMMARY_JSON
+const summaryPath = process.argv[2] || process.env.TICKERKEEP_SUMMARY_JSON
 
 if (!summaryPath) {
   console.error('FATAL: no summary JSON supplied.')
   console.error('')
   console.error('Usage:')
   console.error('  node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs <path-to-summary.json>')
-  console.error('  PANWATCH_SUMMARY_JSON=<path> node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs')
+  console.error('  TICKERKEEP_SUMMARY_JSON=<path> node --experimental-strip-types scripts/tests/test_cross_layer_parity.mjs')
   console.error('')
   console.error('That file must be the REAL, verbatim JSON body returned by')
   console.error('src.web.api.accounts.get_portfolio_summary(account_id=None, include_quotes=True, db=<in-memory session>)')

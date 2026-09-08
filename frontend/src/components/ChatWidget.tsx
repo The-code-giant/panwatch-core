@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MessageCircle, X, Plus, Trash2, Send, ChevronLeft, XCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import { chatApi, type ChatConversation, type ChatMessage } from '@panwatch/api'
+import { chatApi, type ChatConversation, type ChatMessage } from '@tickerkeep/api'
 
 interface StockContext {
   symbol: string
@@ -132,8 +132,8 @@ export default function ChatWidget() {
         setView('chat')
       })
     }
-    window.addEventListener('panwatch-open-chat', handler)
-    return () => window.removeEventListener('panwatch-open-chat', handler)
+    window.addEventListener('tickerkeep-open-chat', handler)
+    return () => window.removeEventListener('tickerkeep-open-chat', handler)
   }, [loadSuggestedQuestions])
 
   useEffect(() => {

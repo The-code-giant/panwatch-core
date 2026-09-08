@@ -25,7 +25,7 @@ export default function Rail({ version, onOpenLogs, nextRun }: RailProps) {
         <span className="grid h-6.5 w-6.5 shrink-0 place-items-center rounded-lg bg-primary p-1 text-primary-foreground">
           <Radar className="h-4 w-4" aria-hidden />
         </span>
-        <span className="text-[16.5px] font-black tracking-[-0.03em] text-rail-foreground">PanWatch</span>
+        <span className="text-[16.5px] font-black tracking-[-0.03em] text-rail-foreground">TickerKeep</span>
       </NavLink>
 
       <p className="px-2 pb-2 text-[10.5px] font-bold uppercase tracking-[0.1em] text-rail-muted/70">

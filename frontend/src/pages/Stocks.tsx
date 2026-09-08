@@ -1,29 +1,29 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Plus, Trash2, Pencil, Search, X, Bot, Play, RefreshCw, Building2, ChevronDown, ChevronRight, Cpu, Bell, Clock, Newspaper, ExternalLink, BarChart3, Brain, Eye } from 'lucide-react'
-import { fetchAPI, stocksApi, type AIService, type NotifyChannel } from '@panwatch/api'
+import { fetchAPI, stocksApi, type AIService, type NotifyChannel } from '@tickerkeep/api'
 import { useLocalStorage } from '@/lib/utils'
 import { mergePortfolioQuotes } from '@/lib/portfolio-valuation'
 import { ALL_MARKETS, DEFAULT_MARKET, EQUITY_MARKETS, MARKET_LABEL, MARKET_SHORT, MARKET_SYMBOL_HINT, isMarket, marketLabel } from '@/lib/markets'
 import { marketBadgeClass } from '@/lib/market'
-import { SuggestionBadge, type SuggestionInfo, type KlineSummary } from '@panwatch/biz-ui/components/suggestion-badge'
+import { SuggestionBadge, type SuggestionInfo, type KlineSummary } from '@tickerkeep/biz-ui/components/suggestion-badge'
 import { buildKlineSuggestion } from '@/lib/kline-scorer'
-import { KlineSummaryDialog } from '@panwatch/biz-ui/components/kline-summary-dialog'
-import { Button } from '@panwatch/base-ui/components/ui/button'
-import { Input } from '@panwatch/base-ui/components/ui/input'
-import { Label } from '@panwatch/base-ui/components/ui/label'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
-import { Badge } from '@panwatch/base-ui/components/ui/badge'
-import { Skeleton } from '@panwatch/base-ui/components/ui/skeleton'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@panwatch/base-ui/components/ui/dialog'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@panwatch/base-ui/components/ui/select'
-import { useToast } from '@panwatch/base-ui/components/ui/toast'
-import { Card, StatCell } from '@panwatch/base-ui/components/ui/card'
-import { TableWrap, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@panwatch/base-ui/components/ui/table'
-import { InfoTip } from '@panwatch/base-ui/components/ui/tooltip'
-import { EmptyState } from '@panwatch/base-ui/components/ui/empty-state'
-import StockInsightModal from '@panwatch/biz-ui/components/stock-insight-modal'
-import { DeepAnalysisModal } from '@panwatch/biz-ui/components/deep-analysis-modal'
-import StockPriceAlertPanel from '@panwatch/biz-ui/components/stock-price-alert-panel'
+import { KlineSummaryDialog } from '@tickerkeep/biz-ui/components/kline-summary-dialog'
+import { Button } from '@tickerkeep/base-ui/components/ui/button'
+import { Input } from '@tickerkeep/base-ui/components/ui/input'
+import { Label } from '@tickerkeep/base-ui/components/ui/label'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
+import { Badge } from '@tickerkeep/base-ui/components/ui/badge'
+import { Skeleton } from '@tickerkeep/base-ui/components/ui/skeleton'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@tickerkeep/base-ui/components/ui/select'
+import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
+import { Card, StatCell } from '@tickerkeep/base-ui/components/ui/card'
+import { TableWrap, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@tickerkeep/base-ui/components/ui/table'
+import { InfoTip } from '@tickerkeep/base-ui/components/ui/tooltip'
+import { EmptyState } from '@tickerkeep/base-ui/components/ui/empty-state'
+import StockInsightModal from '@tickerkeep/biz-ui/components/stock-insight-modal'
+import { DeepAnalysisModal } from '@tickerkeep/biz-ui/components/deep-analysis-modal'
+import StockPriceAlertPanel from '@tickerkeep/biz-ui/components/stock-price-alert-panel'
 
 interface AgentResult {
   success?: boolean
@@ -315,8 +315,8 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
   const [klineSummaries, setKlineSummaries] = useState<Record<string, KlineSummary>>({})
 
   // Auto-refresh (持久化到 localStorage)
-  const [autoRefresh, setAutoRefresh] = useLocalStorage('panwatch_stocks_autoRefresh', false)
-  const [refreshInterval, setRefreshInterval] = useLocalStorage('panwatch_stocks_refreshInterval', 30)
+  const [autoRefresh, setAutoRefresh] = useLocalStorage('tickerkeep_stocks_autoRefresh', false)
+  const [refreshInterval, setRefreshInterval] = useLocalStorage('tickerkeep_stocks_refreshInterval', 30)
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null)
   const refreshTimerRef = useRef<ReturnType<typeof setInterval>>()
 
@@ -403,7 +403,7 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
 
   // Stock list filter
   const [stockListFilter, setStockListFilter] = useState('')  // '' = all, else a market code from ALL_MARKETS
-  const [watchlistOnlyAlerts, setWatchlistOnlyAlerts] = useLocalStorage<boolean>('panwatch_watchlist_only_alerts', false)
+  const [watchlistOnlyAlerts, setWatchlistOnlyAlerts] = useLocalStorage<boolean>('tickerkeep_watchlist_only_alerts', false)
 
   // Remove watchlist modal
   const [removeWatchStock, setRemoveWatchStock] = useState<Stock | null>(null)
@@ -489,7 +489,7 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
 
   const isSuppressCardClick = () => {
     try {
-      const until = (window as any).__panwatch_suppress_card_click_until
+      const until = (window as any).__tickerkeep_suppress_card_click_until
       return typeof until === 'number' && Date.now() < until
     } catch {
       return false

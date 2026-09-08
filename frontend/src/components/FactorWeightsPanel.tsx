@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Scale } from 'lucide-react'
-import { factorsApi, type FactorWeight } from '@panwatch/api'
-import { Switch } from '@panwatch/base-ui/components/ui/switch'
+import { factorsApi, type FactorWeight } from '@tickerkeep/api'
+import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
 import { ALL_MARKETS, marketLabel } from '@/lib/markets'
 
 const FACTOR_LABELS: Record<string, string> = {

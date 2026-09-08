@@ -4,7 +4,7 @@
 1. LangChain `BaseCallbackHandler`:LLM 每次调用前后的 hook
 2. LangGraph 节点切换:通过 debug=True 流式输出捕获(可选)
 
-进度写入 PanWatch 的 `log_context`,前端轮询 `/api/agents/runs/{trace_id}/progress`
+进度写入 TickerKeep 的 `log_context`,前端轮询 `/api/agents/runs/{trace_id}/progress`
 聚合返回阶段。
 """
 
@@ -45,7 +45,7 @@ except ImportError:  # tradingagents 未装时仍允许 import 本模块,测试�
         pass
 
 
-class PanWatchProgressHandler(_LCBaseCallbackHandler):
+class TickerKeepProgressHandler(_LCBaseCallbackHandler):
     """LangChain BaseCallbackHandler 兼容的进度处理器。
 
     新版 langchain (1.x) 把 callbacks 字段用 pydantic 校验为 BaseCallbackHandler 实例,

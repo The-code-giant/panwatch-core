@@ -29,7 +29,7 @@ collector/provider 入口 (`get_market_data`)、以及 analyze() 路径上会触
 不连网、不依赖真实数据库、不构造/运行任何 TradingAgentsGraph、不发起任何真实
 model/provider 调用；自动断网 fixture 照抄 tests/test_agent_portfolio_boundary.py 的
 既有先例。TradingAgentsAgent 实例强制 `_available = True`,绕开对 `tradingagents`
-这个重量级可选依赖是否真的装了的探测——本模块只关心 PanWatch 自己这段入口代码。
+这个重量级可选依赖是否真的装了的探测——本模块只关心 TickerKeep 自己这段入口代码。
 """
 
 from __future__ import annotations
@@ -189,7 +189,7 @@ def _install_entrypoint_spies(monkeypatch, *, run_sync_decision: str = "HOLD") -
 
 def _build_agent() -> TradingAgentsAgent:
     """构造 TradingAgentsAgent 并强制标记为可用,绕开对重量级可选依赖
-    `tradingagents` 是否真的装了的探测——本模块只驱动 PanWatch 自己这段入口代码,
+    `tradingagents` 是否真的装了的探测——本模块只驱动 TickerKeep 自己这段入口代码,
     从不导入/构造真实 `TradingAgentsGraph`。"""
     agent = TradingAgentsAgent()
     agent._available = True

@@ -1,4 +1,4 @@
-# PanWatch Dockerfile
+# TickerKeep Dockerfile
 # 多阶段构建，减小最终镜像大小
 
 # ===== Stage 1: 前端构建 =====
@@ -32,7 +32,7 @@ WORKDIR /app
 # - tzdata: zoneinfo data
 # - git: requirements.txt pulls tradingagents from a git+https URL
 # - fonts-noto-cjk + pango/cairo/gdk-pixbuf/glib/fontconfig: WeasyPrint (PDF export) and
-#   matplotlib font rendering. No browser: charts are rendered from PanWatch's own bars.
+#   matplotlib font rendering. No browser: charts are rendered from TickerKeep's own bars.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
     git \
