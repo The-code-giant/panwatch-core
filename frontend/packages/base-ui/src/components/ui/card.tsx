@@ -105,8 +105,11 @@ const StatCell = React.forwardRef<HTMLDivElement, StatCellProps>(
     <div ref={ref} className={cn('p-4 min-w-0', className)} {...props}>
       <div className="stat-label mb-1 truncate">{label}</div>
       <div className="flex items-baseline gap-2 min-w-0">
-        <span className={cn('stat-value truncate', toneClass[tone])}>{value}</span>
-        {aside}
+        {/* The headline figure never truncates: a clipped number is worse than a
+            missing aside, and `100.0%` ellipsised to `100....` loses the unit
+            entirely. The aside yields the space instead. */}
+        <span className={cn('stat-value whitespace-nowrap shrink-0', toneClass[tone])}>{value}</span>
+        {aside ? <span className="min-w-0 truncate">{aside}</span> : null}
       </div>
     </div>
   ),
