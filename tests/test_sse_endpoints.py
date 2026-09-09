@@ -152,12 +152,36 @@ def test_logs_sse_filters(monkeypatch):
 def test_logs_sse_tail_only_new(monkeypatch):
     """日志 SSE：无 Last-Event-ID 时从当前最新开始，只 tail 增量"""
     factory = _make_log_db(monkeypatch)
-    # 时序阈值放宽以抗环境负载:该用例依赖"先建立基线快照、再插入增量"的先后关系,
-    # 原 0.05s 预留在高负载下可能让首轮基线轮询尚未跑完就插入,导致新日志被并入基线
-    # 而不被 tail(基线偶发 flaky,与本次改动无关)。加大 MAX_DURATION 与插入前等待,
-    # 给事件循环足够调度余量。
     monkeypatch.setattr(logs_api, "LOGS_SSE_POLL_SEC", 0.02)
-    monkeypatch.setattr(logs_api, "LOGS_SSE_MAX_DURATION_SEC", 1.5)
+    monkeypatch.setattr(logs_api, "LOGS_SSE_MAX_DURATION_SEC", 1.0)
+
+    # 真正的竞态：无 Last-Event-ID 时，gen() 用
+    # `cursor = await asyncio.to_thread(_current_max_id)` 在线程池里把"当前最新 id"
+    # 定为基线游标；这一步和下面"插入新日志"是两个真正并发的一方——游标计算跑在
+    # 线程池的线程上，插入跑在事件循环所在线程、同步执行。两者谁先跑完没有任何
+    # 天然保证。旧版本用 `await asyncio.sleep(0.3)` 赌线程池能在 300ms 内把游标
+    # 算完，负载高时（线程池饥饿/调度延迟）插入会抢在游标计算之前完成，新那行
+    # 日志的 id 被当成"基线本身"锁进 cursor，`_fetch_after(cursor)` 用
+    # `id > cursor` 一过滤就把它过滤没了——测试断言 0 条而不是 1 条，这正是本文件
+    # 顶部记录的 1/3 概率的 flaky（已用 20 次紧凑循环复现，见 W-15 报告）。
+    #
+    # 修复：不再用时长去猜，而是拦截 gen() 唯一会调用到的
+    # `asyncio.to_thread`，直接观察"游标计算这次调用已经跑完"这个真实事件——
+    # 第一次调用必然就是 `_current_max_id`（因为本用例 last_event_id=0，
+    # `resume_id` 恒为 0，游标只能来自这次 to_thread 调用）。等这个 event
+    # set 之后再插入，游标已经确定性地在插入之前落定，race 从根上消失。
+    cursor_ready = asyncio.Event()
+    to_thread_calls = {"n": 0}
+    real_to_thread = asyncio.to_thread
+
+    async def to_thread_spy(func, *args, **kwargs):
+        result = await real_to_thread(func, *args, **kwargs)
+        to_thread_calls["n"] += 1
+        if to_thread_calls["n"] == 1:
+            cursor_ready.set()
+        return result
+
+    monkeypatch.setattr(asyncio, "to_thread", to_thread_spy)
 
     async def run():
         request = SimpleNamespace(headers={})
@@ -172,8 +196,8 @@ def test_logs_sse_tail_only_new(monkeypatch):
                 received.append(chunk)
 
         task = asyncio.create_task(consume())
-        # 等首轮基线轮询稳妥跑完后再插入新日志(放宽到 0.3s 抗负载抖动)
-        await asyncio.sleep(0.3)
+        # 等基线游标真正算完（真实信号），而不是赌一个时长
+        await asyncio.wait_for(cursor_ready.wait(), timeout=3)
         db = factory()
         db.add(LogEntry(
             timestamp=datetime.now(timezone.utc),
