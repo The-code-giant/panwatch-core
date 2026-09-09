@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Check, Eye, EyeOff, Plus, Pencil, Trash2, Star, Send, Cpu, Play, Download, Upload, FileJson, BarChart3, User, Radar } from 'lucide-react'
+import { Check, Eye, EyeOff, Plus, Pencil, Trash2, Star, Send, Cpu, Play, Download, Upload, FileJson, BarChart3, User, Radar, AlertTriangle } from 'lucide-react'
 import { fetchAPI, type AIService, type AIModel, type NotifyChannel } from '@tickerkeep/api'
 import { useAvatar, saveAvatar, fileToAvatarDataUrl } from '@/hooks/use-avatar'
 import PatSection from '@/components/PatSection'
@@ -306,6 +306,8 @@ export default function SettingsPage() {
   const [modelDialogOpen, setModelDialogOpen] = useState(false)
   const [modelForm, setModelForm] = useState<ModelForm>(emptyModelForm)
   const [editModelId, setEditModelId] = useState<number | null>(null)
+  const [modelIdWarning, setModelIdWarning] = useState<string | null>(null)
+  const [checkingModelId, setCheckingModelId] = useState(false)
 
   // 批量选择嗅探到的模型
   const [batchOpen, setBatchOpen] = useState(false)
@@ -640,15 +642,48 @@ export default function SettingsPage() {
       setModelForm({ ...emptyModelForm, service_id: serviceId ?? null })
       setEditModelId(null)
     }
+    setModelIdWarning(null)
     setModelDialogOpen(true)
   }
 
+  // Cross-checks the typed Model ID against the provider's real model list before saving.
+  // Providers that don't support discovery (or a transient error) fall through to saving directly -
+  // this is a soft warning, not a hard block, since some valid models (fine-tunes, private deployments)
+  // never show up in a public discovery list.
+  const attemptSaveModel = async () => {
+    if (modelIdWarning) {
+      await saveModel()
+      setModelIdWarning(null)
+      return
+    }
+    if (modelForm.service_id) {
+      setCheckingModelId(true)
+      try {
+        const res = await fetchAPI<{ models: string[] }>(
+          `/providers/services/${modelForm.service_id}/discover-models`,
+          { method: 'POST' },
+        )
+        const found = res.models.filter(Boolean)
+        if (found.length > 0 && !found.includes(modelForm.model.trim())) {
+          setModelIdWarning("Not found in this provider's available models - Create again to add it anyway")
+          setCheckingModelId(false)
+          return
+        }
+      } catch {
+        // Provider doesn't support discovery - nothing to check against, save directly
+      }
+      setCheckingModelId(false)
+    }
+    await saveModel()
+  }
+
   const saveModel = async () => {
+    const payload = { ...modelForm, model: modelForm.model.trim() }
     try {
       if (editModelId) {
-        await fetchAPI(`/providers/models/${editModelId}`, { method: 'PUT', body: JSON.stringify(modelForm) })
+        await fetchAPI(`/providers/models/${editModelId}`, { method: 'PUT', body: JSON.stringify(payload) })
       } else {
-        await fetchAPI('/providers/models', { method: 'POST', body: JSON.stringify(modelForm) })
+        await fetchAPI('/providers/models', { method: 'POST', body: JSON.stringify(payload) })
       }
       setModelDialogOpen(false)
       load()
@@ -1380,6 +1415,7 @@ export default function SettingsPage() {
                     return
                   }
                   setModelForm({ ...modelForm, service_id: val ? parseInt(val) : null })
+                  setModelIdWarning(null)
                 }}
               >
                 <SelectTrigger>
@@ -1409,18 +1445,33 @@ export default function SettingsPage() {
               <Input
                 value={modelForm.model}
                 disabled={!modelForm.service_id}
-                onChange={e => setModelForm({ ...modelForm, model: e.target.value })}
+                onChange={e => {
+                  setModelForm({ ...modelForm, model: e.target.value })
+                  setModelIdWarning(null)
+                }}
+                onBlur={() => {
+                  const trimmed = modelForm.model.trim()
+                  if (trimmed !== modelForm.model) setModelForm({ ...modelForm, model: trimmed })
+                }}
                 placeholder={modelForm.service_id ? 'gpt-4o / glm-4-flash' : 'Select a provider first'}
                 className="font-mono"
               />
-              {/\s/.test(modelForm.model) && (
+              {/\s/.test(modelForm.model.trim()) && (
                 <p className="text-[11px] text-destructive mt-1">Model ID can't contain spaces</p>
+              )}
+              {modelIdWarning && (
+                <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 flex-shrink-0" /> {modelIdWarning}
+                </p>
               )}
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setModelDialogOpen(false)}>Cancel</Button>
-              <button type="button" className="btn-primary" onClick={saveModel} disabled={!modelForm.model.trim() || /\s/.test(modelForm.model) || !modelForm.service_id}>
-                {editModelId ? 'Save' : 'Create'}
+              <button
+                type="button" className="btn-primary" onClick={attemptSaveModel}
+                disabled={!modelForm.model.trim() || /\s/.test(modelForm.model.trim()) || !modelForm.service_id || checkingModelId}
+              >
+                {checkingModelId ? 'Checking...' : modelIdWarning ? 'Create anyway' : (editModelId ? 'Save' : 'Create')}
               </button>
             </div>
           </div>
