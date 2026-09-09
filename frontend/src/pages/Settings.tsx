@@ -8,7 +8,7 @@ import { Label } from '@tickerkeep/base-ui/components/ui/label'
 import { Button } from '@tickerkeep/base-ui/components/ui/button'
 import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@tickerkeep/base-ui/components/ui/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectSeparator } from '@tickerkeep/base-ui/components/ui/select'
 import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@tickerkeep/base-ui/components/ui/card'
 import { InfoTip } from '@tickerkeep/base-ui/components/ui/tooltip'
@@ -1370,7 +1370,14 @@ export default function SettingsPage() {
               <Label>Provider</Label>
               <Select
                 value={modelForm.service_id?.toString() ?? ''}
-                onValueChange={val => setModelForm({ ...modelForm, service_id: val ? parseInt(val) : null })}
+                onValueChange={val => {
+                  if (val === '__add_new__') {
+                    setModelDialogOpen(false)
+                    openServiceDialog()
+                    return
+                  }
+                  setModelForm({ ...modelForm, service_id: val ? parseInt(val) : null })
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a provider" />
@@ -1379,6 +1386,10 @@ export default function SettingsPage() {
                   {services.map(s => (
                     <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>
                   ))}
+                  {services.length > 0 && <SelectSeparator />}
+                  <SelectItem value="__add_new__">
+                    <span className="flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Add new provider (OpenAI, Anthropic, etc.)</span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
