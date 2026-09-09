@@ -1317,6 +1317,7 @@ export default function SettingsPage() {
                 value={serviceForm.name}
                 onChange={e => setServiceForm({ ...serviceForm, name: e.target.value })}
                 placeholder="e.g. OpenAI, Anthropic, DeepSeek"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -1326,6 +1327,7 @@ export default function SettingsPage() {
                 onChange={e => setServiceForm({ ...serviceForm, base_url: e.target.value })}
                 placeholder="https://api.openai.com/v1"
                 className="font-mono"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -1337,6 +1339,7 @@ export default function SettingsPage() {
                   onChange={e => setServiceForm({ ...serviceForm, api_key: e.target.value })}
                   placeholder="sk-..."
                   className="font-mono pr-10"
+                  autoComplete="new-password"
                 />
                 <Button
                   type="button" variant="ghost" size="icon"
@@ -1410,10 +1413,13 @@ export default function SettingsPage() {
                 placeholder={modelForm.service_id ? 'gpt-4o / glm-4-flash' : 'Select a provider first'}
                 className="font-mono"
               />
+              {/\s/.test(modelForm.model) && (
+                <p className="text-[11px] text-destructive mt-1">Model ID can't contain spaces</p>
+              )}
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setModelDialogOpen(false)}>Cancel</Button>
-              <button type="button" className="btn-primary" onClick={saveModel} disabled={!modelForm.model || !modelForm.service_id}>
+              <button type="button" className="btn-primary" onClick={saveModel} disabled={!modelForm.model.trim() || /\s/.test(modelForm.model) || !modelForm.service_id}>
                 {editModelId ? 'Save' : 'Create'}
               </button>
             </div>
