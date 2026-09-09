@@ -33,6 +33,36 @@ JWT_SECRET_KEY = "jwt_secret"
 # JWT Secret 缓存
 _jwt_secret: str | None = None
 
+# Capability contract
+#
+# ``GET /auth/me`` returns a flat list of capability strings next to ``user``.
+# Naming scheme is ``<noun>:<verb>``: the noun is the resource family and the
+# verb is one of ``read`` (view) or ``manage`` (create / change / delete).
+# There is no hierarchy in the strings themselves; a client checks for the exact
+# name it needs, and a server that grants ``<noun>:manage`` is expected to also
+# grant ``<noun>:read``.
+#
+# tickerkeep-core is single-operator: ``create_token()`` takes no subject and the
+# one signed-in identity owns the whole installation, so core always returns the
+# complete list. A multi-tenant deployment fills the same key from the caller's
+# organization role and plan entitlements instead. Only the names live here;
+# core ships no organization, member, SSO, audit, seat or billing implementation,
+# and the strings are the interface that lets a private overlay add those pages
+# without inventing its own vocabulary.
+OPERATOR_CAPABILITIES: tuple[str, ...] = (
+    "org:read",
+    "org:manage",
+    "members:read",
+    "members:manage",
+    "sso:read",
+    "sso:manage",
+    "audit:read",
+    "seats:read",
+    "seats:manage",
+    "billing:read",
+    "billing:manage",
+)
+
 
 def get_jwt_secret() -> str:
     """获取 JWT Secret（持久化到数据库）"""
@@ -251,5 +281,11 @@ async def change_password(
 
 @router.get("/me")
 async def get_me(user: str = Depends(get_current_user)):
-    """获取当前用户信息"""
-    return {"user": user or "guest"}
+    """获取当前用户信息
+
+    ``user`` is unchanged from earlier releases. ``capabilities`` is additive: the
+    flat list described next to ``OPERATOR_CAPABILITIES``. Core is single-operator,
+    so whoever reaches this endpoint (the signed-in user, or ``guest`` before a
+    password has been set) holds every capability.
+    """
+    return {"user": user or "guest", "capabilities": list(OPERATOR_CAPABILITIES)}

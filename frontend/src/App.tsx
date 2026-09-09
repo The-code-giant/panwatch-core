@@ -3,6 +3,8 @@ import { Routes, Route, NavLink, useLocation, useNavigate, Navigate } from 'reac
 import { useTheme } from '@/hooks/use-theme'
 import { appApi, fetchAPI, homeApi, isAuthenticated } from '@tickerkeep/api'
 import { isMarketingPath } from '@/marketing/routes'
+import { isEnterprisePath } from '@/enterprise/routes'
+import { CapabilityProvider } from '@/lib/capabilities'
 import Rail from '@/components/shell/Rail'
 import TopBar from '@/components/shell/TopBar'
 import RoomShell from '@/components/shell/RoomShell'
@@ -13,6 +15,8 @@ import { Button } from '@tickerkeep/base-ui/components/ui/button'
 // Every page is its own chunk, so the public marketing home does not download
 // the app, and the app does not download the marketing site.
 const MarketingRoutes = lazy(() => import('@/marketing'))
+// Enterprise pages are their own chunk too; core's stub renders nothing.
+const EnterpriseRoutes = lazy(() => import('@/enterprise'))
 // Heavy app-only overlays (markdown chat, logs, self-check, command palette)
 // load after the shell, so the public pages never download them.
 const LogsModal = lazy(() => import('@tickerkeep/biz-ui/components/logs-modal'))
@@ -160,6 +164,7 @@ function App() {
 
   return (
     <RequireAuth>
+      <CapabilityProvider>
       <div className="relative min-h-screen overflow-x-clip bg-background pb-16 md:pb-0">
         <Rail
           version={version}
@@ -210,6 +215,12 @@ function App() {
 
             <RoomShell>
               <Suspense fallback={routeFallback}>
+              {/* Enterprise pages (private overlay) sit inside the signed-in shell:
+                  same rail, top bar, room shell and session. Checked ahead of the
+                  route table so the `*` catch-all never swallows them. */}
+              {isEnterprisePath(location.pathname) ? (
+                <EnterpriseRoutes />
+              ) : (
               <Routes>
                 {/* Rooms */}
                 <Route path="/today" element={<TodayPage />} />
@@ -236,6 +247,7 @@ function App() {
                 ))}
                 <Route path="*" element={<Navigate to="/today" replace />} />
               </Routes>
+              )}
               </Suspense>
             </RoomShell>
           </div>
@@ -281,6 +293,7 @@ function App() {
           </DialogContent>
         </Dialog>
       </div>
+      </CapabilityProvider>
     </RequireAuth>
   )
 }
