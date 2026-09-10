@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Moon, Sun, Monitor, Check, LogOut, User, Stethoscope, type LucideIcon } from 'lucide-react'
-import { isAuthenticated, logout } from '@tickerkeep/api'
+import { useAuthSession, signOut } from '@/auth/session'
 import type { ThemeMode } from '@/hooks/use-theme'
 import { useAvatar } from '@/hooks/use-avatar'
 
@@ -44,6 +44,7 @@ export default function AccountMenu({
   const ref = useRef<HTMLDivElement | null>(null)
   const location = useLocation()
   const avatar = useAvatar()
+  const { status: sessionStatus } = useAuthSession()
   // Enable hover-to-expand only on devices that support hover (desktop); touch devices keep click behavior
   const [canHover] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches,
@@ -76,6 +77,7 @@ export default function AccountMenu({
       onMouseLeave={canHover ? () => setOpen(false) : undefined}
     >
       <button
+        data-testid="account-menu-trigger"
         onClick={() => setOpen(v => !v)}
         className={`${avatarSize} rounded-full overflow-hidden bg-primary text-primary-foreground flex items-center justify-center ring-1 transition-colors ${
           open ? 'ring-primary/50' : 'ring-border/40 hover:ring-primary/40'
@@ -150,11 +152,12 @@ export default function AccountMenu({
             System Self-Check
           </button>
 
-          {isAuthenticated() && (
+          {sessionStatus === 'authenticated' && (
             <>
               <div className="my-1 h-px bg-border/50" />
               <button
-                onClick={logout}
+                data-testid="auth-signout"
+                onClick={() => { void signOut() }}
                 className="flex w-full items-center gap-2.5 px-2.5 py-2 rounded-lg text-[12px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
               >
                 <LogOut className="w-3.5 h-3.5" />

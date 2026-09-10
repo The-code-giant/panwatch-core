@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { Routes, Route, NavLink, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/use-theme'
-import { appApi, fetchAPI, homeApi, isAuthenticated } from '@tickerkeep/api'
+import { appApi, fetchAPI, homeApi } from '@tickerkeep/api'
 import { isMarketingPath } from '@/marketing/routes'
 import { isEnterprisePath } from '@/enterprise/routes'
+import { isAuthPath, LOGIN_PATH } from '@/auth/routes'
+import { useAuthSession } from '@/auth/session'
 import { CapabilityProvider } from '@/lib/capabilities'
 import Rail from '@/components/shell/Rail'
 import TopBar from '@/components/shell/TopBar'
@@ -17,6 +19,9 @@ import { Button } from '@tickerkeep/base-ui/components/ui/button'
 const MarketingRoutes = lazy(() => import('@/marketing'))
 // Enterprise pages are their own chunk too; core's stub renders nothing.
 const EnterpriseRoutes = lazy(() => import('@/enterprise'))
+// The sign-in UI is a seam as well (src/auth): core ships its single login
+// page; the cloud overlay replaces the directory with its own pages.
+const AuthRoutes = lazy(() => import('@/auth'))
 // Heavy app-only overlays (markdown chat, logs, self-check, command palette)
 // load after the shell, so the public pages never download them.
 const LogsModal = lazy(() => import('@tickerkeep/biz-ui/components/logs-modal'))
@@ -33,7 +38,6 @@ const HistoryPage = lazy(() => import('@/pages/History'))
 const AnalysisDetailPage = lazy(() => import('@/pages/AnalysisDetail'))
 const PriceAlertsPage = lazy(() => import('@/pages/PriceAlerts'))
 const PaperTradingPage = lazy(() => import('@/pages/PaperTrading'))
-const LoginPage = lazy(() => import('@/pages/Login'))
 
 const routeFallback = (
   <div className="flex min-h-screen items-center justify-center bg-background">
@@ -43,16 +47,8 @@ const routeFallback = (
 
 // Auth guard component
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const [authState, setAuthState] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking')
+  const { status: authState } = useAuthSession()
   const location = useLocation()
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      setAuthState('authenticated')
-      return
-    }
-    setAuthState('unauthenticated')
-  }, [])
 
   if (authState === 'checking') {
     return (
@@ -63,7 +59,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   }
 
   if (authState === 'unauthenticated') {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return <Navigate to={LOGIN_PATH} state={{ from: location }} replace />
   }
 
   return <>{children}</>
@@ -82,6 +78,11 @@ function App() {
   const [nextRun, setNextRun] = useState<{ label: string; at: string; note: string } | null>(null)
   const [alertCount, setAlertCount] = useState(0)
   const checkedUpdateRef = useRef(false)
+  // The shell's own /api/* bootstrap calls below wait for the seam session to
+  // be 'authenticated'. In core that resolves in the hook's mount effect, so
+  // nothing changes for self-hosted users; an overlay whose session check is
+  // asynchronous simply delays these calls until it is known.
+  const { status: sessionStatus } = useAuthSession()
 
   useEffect(() => {
     appApi.version()
@@ -91,7 +92,7 @@ function App() {
 
   useEffect(() => {
     if (checkedUpdateRef.current) return
-    if (!isAuthenticated()) return
+    if (sessionStatus !== 'authenticated') return
     const current = String(version || '').trim()
     if (!current || current === 'dev') return
     checkedUpdateRef.current = true
@@ -107,12 +108,12 @@ function App() {
         setUpgradeOpen(true)
       })
       .catch(() => {})
-  }, [version])
+  }, [version, sessionStatus])
 
   // The rail's watcher card and the top bar's bell both report real state:
   // the next scheduled agent run, and how many alert rules fired today.
   useEffect(() => {
-    if (!isAuthenticated()) return
+    if (sessionStatus !== 'authenticated') return
     let cancelled = false
 
     fetchAPI<{ agents: { display_name: string; name: string; enabled: boolean; next_runs: string[] }[] }>('/agents/health')
@@ -136,7 +137,7 @@ function App() {
       .catch(() => {})
 
     return () => { cancelled = true }
-  }, [])
+  }, [sessionStatus])
 
   // The public marketing site: no session, no app shell, its own visual world.
   if (isMarketingPath(location.pathname)) {
@@ -147,16 +148,13 @@ function App() {
     )
   }
 
-  // Login stands outside the room shell: one centred form, no navigation.
-  if (location.pathname === '/login') {
+  // The sign-in UI stands outside the room shell: no rail, no top bar, no
+  // session guard. Which paths and what renders there is the auth seam's.
+  if (isAuthPath(location.pathname)) {
     return (
-      <div className="min-h-screen bg-background">
-        <Suspense fallback={routeFallback}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </Suspense>
-      </div>
+      <Suspense fallback={routeFallback}>
+        <AuthRoutes />
+      </Suspense>
     )
   }
 
