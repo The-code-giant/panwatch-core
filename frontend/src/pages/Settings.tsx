@@ -8,6 +8,7 @@ import { Label } from '@tickerkeep/base-ui/components/ui/label'
 import { Button } from '@tickerkeep/base-ui/components/ui/button'
 import { Switch } from '@tickerkeep/base-ui/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@tickerkeep/base-ui/components/ui/dialog'
+import { ConfirmDialog } from '@tickerkeep/base-ui/components/ui/confirm-dialog'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@tickerkeep/base-ui/components/ui/select'
 import { useToast } from '@tickerkeep/base-ui/components/ui/toast'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@tickerkeep/base-ui/components/ui/card'
@@ -324,6 +325,8 @@ export default function SettingsPage() {
   const [testing, setTesting] = useState<number | null>(null)
   const [testingModel, setTestingModel] = useState<number | null>(null)
 
+  const [confirmDialog, setConfirmDialog] = useState<{ title: string; description?: string; onConfirm: () => void } | null>(null)
+
   // 头像
   const avatar = useAvatar()
   const avatarFileRef = useRef<HTMLInputElement | null>(null)
@@ -621,14 +624,19 @@ export default function SettingsPage() {
     }
   }
 
-  const deleteService = async (id: number) => {
-    if (!confirm('Deleting this provider will also delete all its models. Continue?')) return
-    try {
-      await fetchAPI(`/providers/services/${id}`, { method: 'DELETE' })
-      load()
-    } catch (e) {
-      toast(e instanceof Error ? e.message : 'Delete failed', 'error')
-    }
+  const deleteService = (id: number, name: string) => {
+    setConfirmDialog({
+      title: `Delete provider "${name}"?`,
+      description: 'This will also delete all its models.',
+      onConfirm: async () => {
+        try {
+          await fetchAPI(`/providers/services/${id}`, { method: 'DELETE' })
+          load()
+        } catch (e) {
+          toast(e instanceof Error ? e.message : 'Delete failed', 'error')
+        }
+      },
+    })
   }
 
   // Model CRUD
@@ -657,14 +665,18 @@ export default function SettingsPage() {
     }
   }
 
-  const deleteModel = async (id: number) => {
-    if (!confirm('Delete this model?')) return
-    try {
-      await fetchAPI(`/providers/models/${id}`, { method: 'DELETE' })
-      load()
-    } catch (e) {
-      toast(e instanceof Error ? e.message : 'Delete failed', 'error')
-    }
+  const deleteModel = (id: number, name: string) => {
+    setConfirmDialog({
+      title: `Delete model "${name}"?`,
+      onConfirm: async () => {
+        try {
+          await fetchAPI(`/providers/models/${id}`, { method: 'DELETE' })
+          load()
+        } catch (e) {
+          toast(e instanceof Error ? e.message : 'Delete failed', 'error')
+        }
+      },
+    })
   }
 
   const setDefaultModel = async (id: number) => {
@@ -931,7 +943,7 @@ export default function SettingsPage() {
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openServiceDialog(svc)} aria-label={`Edit ${svc.name}`}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-destructive" onClick={() => deleteService(svc.id)} aria-label={`Delete ${svc.name}`}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-destructive" onClick={() => deleteService(svc.id, svc.name)} aria-label={`Delete ${svc.name}`}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
@@ -969,7 +981,7 @@ export default function SettingsPage() {
                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openModelDialog(svc.id, m)} aria-label={`Edit model ${m.name}`}>
                               <Pencil className="w-3 h-3" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive" onClick={() => deleteModel(m.id)} aria-label={`Delete model ${m.name}`}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive" onClick={() => deleteModel(m.id, m.name)} aria-label={`Delete model ${m.name}`}>
                               <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
@@ -1552,6 +1564,14 @@ export default function SettingsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDialog}
+        onOpenChange={open => { if (!open) setConfirmDialog(null) }}
+        title={confirmDialog?.title ?? ''}
+        description={confirmDialog?.description}
+        onConfirm={() => confirmDialog?.onConfirm()}
+      />
 
       {/* Version Footer */}
       {version && (
