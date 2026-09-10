@@ -41,6 +41,11 @@ PRODUCT_CAPABILITIES_IN_ORDER = (
     "reports:read",
     "settings:read",
     "datasources:read",
+    # 另外两个核心自有功能，下游版本可能没有：建议反馈统计
+    # (/api/feedback/*) 与个人访问令牌 (/api/pats)。云端用会话 Cookie 认证、
+    # 也没有反馈管线，两者都不授予，相应的 Settings 区块因此不渲染、也不发请求。
+    "feedback:read",
+    "pats:read",
 )
 
 

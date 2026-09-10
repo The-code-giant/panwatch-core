@@ -3,6 +3,7 @@ import { Check, Eye, EyeOff, Plus, Pencil, Trash2, Star, Send, Cpu, Play, Downlo
 import { fetchAPI, type AIService, type AIModel, type NotifyChannel } from '@tickerkeep/api'
 import { useAvatar, saveAvatar, fileToAvatarDataUrl } from '@/hooks/use-avatar'
 import PatSection from '@/components/PatSection'
+import { useCapabilities } from '@/lib/capabilities'
 import { Input } from '@tickerkeep/base-ui/components/ui/input'
 import { Label } from '@tickerkeep/base-ui/components/ui/label'
 import { Button } from '@tickerkeep/base-ui/components/ui/button'
@@ -477,7 +478,18 @@ export default function SettingsPage() {
     }
   }
 
-  useEffect(() => { load(); loadFeedbackStats() }, [])
+  // A deployment that does not grant these capabilities does not serve the
+  // routes behind them, so asking would be a guaranteed 404 in the console and
+  // a section that renders "no data" for a feature that does not exist here.
+  // Waits for `loaded` so the first tick cannot fire an ungated request.
+  const capabilities = useCapabilities()
+  const canReadFeedback = capabilities.has('feedback:read')
+
+  useEffect(() => {
+    if (!capabilities.loaded) return
+    load()
+    if (canReadFeedback) loadFeedbackStats()
+  }, [capabilities.loaded, canReadFeedback])
 
   const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -794,7 +806,7 @@ export default function SettingsPage() {
     { id: 'sec-notify', label: 'Notifications', hint: `${enabledChannels.length}/${channels.length} enabled` },
     { id: 'sec-system', label: 'System', hint: health?.timezone ? `TZ ${health.timezone}` : undefined },
     { id: 'sec-pack', label: 'Config Pack' },
-    { id: 'sec-feedback', label: 'Feedback' },
+    ...(canReadFeedback ? [{ id: 'sec-feedback', label: 'Feedback' }] : []),
     { id: 'sec-pat', label: 'MCP Tokens' },
   ]
 
@@ -1236,7 +1248,8 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Feedback Stats */}
+        {/* Feedback Stats -- only where the deployment serves /api/feedback/*. */}
+        {canReadFeedback && (
         <Card id="sec-feedback" className="lg:col-span-5">
           <CardHeader>
             <div>
@@ -1297,9 +1310,13 @@ export default function SettingsPage() {
           )}
           </CardContent>
         </Card>
+        )}
 
-        {/* MCP Access Tokens */}
-        <PatSection />
+        {/* MCP Access Tokens -- only where the deployment serves /api/pats.
+            A cloud edition authenticates with a session cookie and issues no
+            personal access token, so rendering the section would offer a
+            control that cannot work and list an emptiness that means nothing. */}
+        {capabilities.has('pats:read') && <PatSection />}
 
       </div>
 

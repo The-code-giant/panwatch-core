@@ -87,6 +87,10 @@ OPERATOR_CAPABILITIES: tuple[str, ...] = (
     "reports:read",
     "settings:read",
     "datasources:read",
+    # Two more core features a downstream edition may not have. Same rule as the
+    # rest: core is single-operator and self-hosted, so it grants them all.
+    "feedback:read",
+    "pats:read",
 )
 
 

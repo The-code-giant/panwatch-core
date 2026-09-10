@@ -29,11 +29,26 @@ const EXIT_REASON_MAP: Record<string, string> = {
   manual: 'Manual close',
 }
 
-function formatCurrency(v: number) {
+/** Shown wherever a figure exists but this deployment does not track it. */
+const NOT_TRACKED = '\u2014'
+
+function formatCurrency(v: number | null | undefined) {
+  // Null is "not tracked", which is NOT zero: rendering 0.00 would state a
+  // balance the server never reported. Guarding here rather than at each call
+  // site means a newly-nullable field cannot crash the page by being missed.
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED
   return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-function PnlText({ value, suffix = '' }: { value: number; suffix?: string }) {
+function formatPercent(v: number | null | undefined, digits: number) {
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED
+  return `${v.toFixed(digits)}%`
+}
+
+function PnlText({ value, suffix = '' }: { value: number | null | undefined; suffix?: string }) {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return <span className="text-muted-foreground tabular-nums">{NOT_TRACKED}</span>
+  }
   const color = value > 0 ? 'text-stock-up' : value < 0 ? 'text-stock-down' : 'text-muted-foreground'
   const prefix = value > 0 ? '+' : ''
   return <span className={`${color} tabular-nums`}>{prefix}{formatCurrency(value)}{suffix}</span>
@@ -418,10 +433,10 @@ export default function PaperTradingPage() {
             <StatCell label="Total P&L" value={<PnlText value={account.total_pnl} />} />
             <StatCell
               label="Win Rate"
-              value={`${account.win_rate.toFixed(1)}%`}
+              value={formatPercent(account.win_rate, 1)}
               aside={<span className="stat-label whitespace-nowrap">{account.winning_trades}/{account.total_trades} trades</span>}
             />
-            <StatCell label="Max Drawdown" value={`${account.max_drawdown_pct.toFixed(2)}%`} tone="down" />
+            <StatCell label="Max Drawdown" value={formatPercent(account.max_drawdown_pct, 2)} tone="down" />
             <StatCell label="Available Funds" value={formatCurrency(account.current_capital)} />
           </div>
         </Card>

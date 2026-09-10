@@ -3,14 +3,21 @@ import { fetchAPI } from './client'
 export interface PaperTradingAccountResponse {
   id: number
   initial_capital: number
-  current_capital: number
-  total_equity: number
+// A figure the deployment does not TRACK is null, not zero. Cloud editions have
+// no paper cash-account model and no market data valuing an open paper
+// position, so equity, available funds, drawdown and (with no closed trade yet)
+// win rate genuinely do not exist there. `number | null` is what the server
+// already sends; typing it `number` is what made the UI call .toFixed() on a
+// null and take the page down. Render these through the null-safe helpers in
+// PaperTrading.tsx, which show an explicit "not tracked" dash.
+  current_capital: number | null
+  total_equity: number | null
   total_pnl: number
   unrealized_pnl: number
   total_trades: number
   winning_trades: number
-  win_rate: number
-  max_drawdown_pct: number
+  win_rate: number | null
+  max_drawdown_pct: number | null
   peak_capital: number
   enabled: boolean
   excluded_markets: string[]
