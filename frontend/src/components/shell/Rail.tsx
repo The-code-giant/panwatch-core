@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Radar, ScrollText } from 'lucide-react'
-import { ROOMS, roomForPath } from './rooms'
+import { useCapabilities } from '@/lib/capabilities'
+import { ROOMS, roomForPath, visibleRooms } from './rooms'
 
 interface RailProps {
   version: string
@@ -17,7 +19,12 @@ interface RailProps {
  */
 export default function Rail({ version, onOpenLogs, nextRun }: RailProps) {
   const location = useLocation()
+  const capabilities = useCapabilities()
   const current = roomForPath(location.pathname)
+  // Fails closed while !capabilities.loaded (see visibleRooms): the rooms
+  // list starts minimal and only grows once /auth/me actually answers, so a
+  // slow probe never shows a room that then disappears.
+  const rooms = useMemo(() => visibleRooms(ROOMS, capabilities), [capabilities])
 
   return (
     <aside className="fixed inset-y-3 left-3 z-40 hidden w-[13.75rem] flex-col rounded-rail bg-rail px-3.5 py-5 md:flex">
@@ -32,7 +39,7 @@ export default function Rail({ version, onOpenLogs, nextRun }: RailProps) {
         Rooms
       </p>
       <nav className="flex flex-col gap-0.5">
-        {ROOMS.map(({ to, label, icon: Icon }) => {
+        {rooms.map(({ to, label, icon: Icon }) => {
           const isActive = current?.to === to
           return (
             <NavLink

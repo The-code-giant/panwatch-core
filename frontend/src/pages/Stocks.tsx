@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Plus, Trash2, Pencil, Search, X, Bot, Play, RefreshCw, Building2, ChevronDown, ChevronRight, Cpu, Bell, Clock, Newspaper, ExternalLink, BarChart3, Brain, Eye } from 'lucide-react'
 import { fetchAPI, stocksApi, type AIService, type NotifyChannel } from '@tickerkeep/api'
+import { useCapabilities } from '@/lib/capabilities'
 import { useLocalStorage } from '@/lib/utils'
 import { mergePortfolioQuotes } from '@/lib/portfolio-valuation'
 import { ALL_MARKETS, DEFAULT_MARKET, EQUITY_MARKETS, MARKET_LABEL, MARKET_SHORT, MARKET_SYMBOL_HINT, isMarket, marketLabel } from '@/lib/markets'
@@ -295,6 +296,7 @@ interface StocksPageProps {
 }
 
 export default function StocksPage({ view = 'positions' }: StocksPageProps = {}) {
+  const capabilities = useCapabilities()
   const [stocks, setStocks] = useState<Stock[]>([])
   const [accounts, setAccounts] = useState<Account[]>([])
   const [agents, setAgents] = useState<AgentConfig[]>([])
@@ -498,13 +500,23 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
   const searchTimer = useRef<ReturnType<typeof setTimeout>>()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // 非核心数据后台加载（不阻塞 UI）
+  // 非核心数据后台加载（不阻塞 UI）。
+  //
+  // /agents is skipped when this deployment's capabilities say it has no
+  // agent pipeline (agents:read absent, e.g. cloud): a deployment-agnostic
+  // "don't ask for what this deployment says it doesn't have" rule, not
+  // cloud-specific logic -- core always grants agents:read, so this fetch
+  // still fires there exactly as before. /providers/services and /channels
+  // are gated the same way on settings:read, which every recognised cloud
+  // role and core both always grant, so those two keep firing everywhere in
+  // practice; the gate is here for symmetry with the same rule, not because
+  // either is currently withheld anywhere.
   const loadConfigAsync = async () => {
     try {
       const [agentData, servicesData, channelsData] = await Promise.all([
-        fetchAPI<AgentConfig[]>('/agents'),
-        fetchAPI<AIService[]>('/providers/services'),
-        fetchAPI<NotifyChannel[]>('/channels'),
+        capabilities.has('agents:read') ? fetchAPI<AgentConfig[]>('/agents') : Promise.resolve<AgentConfig[]>([]),
+        capabilities.has('settings:read') ? fetchAPI<AIService[]>('/providers/services') : Promise.resolve<AIService[]>([]),
+        capabilities.has('settings:read') ? fetchAPI<NotifyChannel[]>('/channels') : Promise.resolve<NotifyChannel[]>([]),
       ])
       setAgents(agentData)
       setServices(servicesData)
@@ -531,8 +543,11 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
       setLoading(false)  // 提前解除阻塞
     }
 
-    // 非核心数据（后台加载，不阻塞 UI）
-    loadConfigAsync()
+    // 非核心数据（后台加载，不阻塞 UI）。loadConfigAsync's own capability
+    // checks need `capabilities.loaded`, which is not guaranteed true on
+    // this first mount tick, so it is NOT called from here -- see the
+    // `capabilities.loaded` effect below, which calls it once (and exactly
+    // once) as soon as that is settled, whether granted or not.
 
     // 市场状态（非核心，失败不影响页面）
     try {
@@ -783,6 +798,18 @@ export default function StocksPage({ view = 'positions' }: StocksPageProps = {})
   }, [refreshQuotes, loadPoolSuggestions, refreshKlines])
 
   useEffect(() => { load(); loadPortfolio(); loadPoolSuggestions(); loadPriceAlertSummaries(); refreshKlines() }, [])
+
+  // loadConfigAsync's /agents (and /providers/services, /channels) calls are
+  // gated on capabilities that are not known on the first mount tick above
+  // (CapabilityProvider's own /auth/me fetch is still in flight), so it runs
+  // from its own effect instead, keyed on capabilities.loaded: it fires
+  // exactly once, as soon as that settles, with whatever was actually
+  // granted -- never before, never a second time.
+  useEffect(() => {
+    if (!capabilities.loaded) return
+    loadConfigAsync()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capabilities.loaded])
 
   // 仅关注列表场景（无持仓）也要在列表加载后预取 K 线摘要，保证技术指标徽章可见
   const watchlistKlineInitDone = useRef(false)

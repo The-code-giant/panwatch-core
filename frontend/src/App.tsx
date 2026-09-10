@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
-import { Routes, Route, NavLink, useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/use-theme'
 import { appApi, fetchAPI, homeApi } from '@tickerkeep/api'
 import { isMarketingPath } from '@/marketing/routes'
@@ -10,7 +10,9 @@ import { CapabilityProvider } from '@/lib/capabilities'
 import Rail from '@/components/shell/Rail'
 import TopBar from '@/components/shell/TopBar'
 import RoomShell from '@/components/shell/RoomShell'
-import { ROOMS, LEGACY_REDIRECTS, roomForPath } from '@/components/shell/rooms'
+import MobileRoomNav from '@/components/shell/MobileRoomNav'
+import RequireCapability from '@/components/shell/RequireCapability'
+import { LEGACY_REDIRECTS, roomForPath, capabilityForPath } from '@/components/shell/rooms'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@tickerkeep/base-ui/components/ui/dialog'
 import { Button } from '@tickerkeep/base-ui/components/ui/button'
 
@@ -170,34 +172,10 @@ function App() {
           nextRun={nextRun ? { ...nextRun, onRun: () => navigate('/agents') } : undefined}
         />
 
-        {/* Mobile: the five rooms as a bottom tab bar, same set as the rail. */}
-        <nav
-          aria-label="Rooms"
-          className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card px-2 pb-[env(safe-area-inset-bottom)] md:hidden"
-        >
-          <div className="flex h-14 items-center justify-around">
-            {ROOMS.map(({ to, label, icon: Icon }) => {
-              const isActive = currentRoom?.to === to
-              return (
-                <NavLink
-                  key={to}
-                  to={to}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`flex min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-1.5 transition-colors ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
-                  }`}
-                >
-                  <span className={`grid h-7 w-11 place-items-center rounded-full transition-colors ${
-                    isActive ? 'bg-primary text-primary-foreground' : ''
-                  }`}>
-                    <Icon className="h-[18px] w-[18px]" aria-hidden />
-                  </span>
-                  <span className="text-[10px] font-semibold">{label}</span>
-                </NavLink>
-              )
-            })}
-          </div>
-        </nav>
+        {/* Mobile: the five rooms as a bottom tab bar, same set as the rail.
+            A separate component so its useCapabilities() call runs inside
+            <CapabilityProvider>'s subtree -- see MobileRoomNav's own doc. */}
+        <MobileRoomNav currentTo={currentRoom?.to} />
 
         <main className="w-full px-3 py-3 md:py-3 md:pl-[15rem] md:pr-3">
           <div className="flex flex-col gap-3.5">
@@ -220,21 +198,26 @@ function App() {
                 <EnterpriseRoutes />
               ) : (
               <Routes>
-                {/* Rooms */}
+                {/* Rooms. Each gated route is wrapped in RequireCapability so
+                    direct navigation (a bookmark, a LEGACY_REDIRECTS target)
+                    is coherent with what the nav shows: never
+                    reachable-but-broken, never unreachable-but-linked. The
+                    capability string itself comes from rooms.ts, the single
+                    source of truth the nav filter also reads. */}
                 <Route path="/today" element={<TodayPage />} />
 
-                <Route path="/portfolio" element={<StocksPage view="positions" />} />
-                <Route path="/portfolio/watchlist" element={<StocksPage view="watchlist" />} />
-                <Route path="/portfolio/paper" element={<PaperTradingPage />} />
-                <Route path="/portfolio/alerts" element={<PriceAlertsPage />} />
+                <Route path="/portfolio" element={<RequireCapability capability={capabilityForPath('/portfolio')}><StocksPage view="positions" /></RequireCapability>} />
+                <Route path="/portfolio/watchlist" element={<RequireCapability capability={capabilityForPath('/portfolio/watchlist')}><StocksPage view="watchlist" /></RequireCapability>} />
+                <Route path="/portfolio/paper" element={<RequireCapability capability={capabilityForPath('/portfolio/paper')}><PaperTradingPage /></RequireCapability>} />
+                <Route path="/portfolio/alerts" element={<RequireCapability capability={capabilityForPath('/portfolio/alerts')}><PriceAlertsPage /></RequireCapability>} />
 
-                <Route path="/discover" element={<OpportunitiesPage />} />
+                <Route path="/discover" element={<RequireCapability capability={capabilityForPath('/discover')}><OpportunitiesPage /></RequireCapability>} />
 
-                <Route path="/agents" element={<AgentsPage />} />
-                <Route path="/agents/reports" element={<HistoryPage />} />
+                <Route path="/agents" element={<RequireCapability capability={capabilityForPath('/agents')}><AgentsPage /></RequireCapability>} />
+                <Route path="/agents/reports" element={<RequireCapability capability={capabilityForPath('/agents/reports')}><HistoryPage /></RequireCapability>} />
 
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/settings/data-sources" element={<DataSourcesPage />} />
+                <Route path="/settings" element={<RequireCapability capability={capabilityForPath('/settings')}><SettingsPage /></RequireCapability>} />
+                <Route path="/settings/data-sources" element={<RequireCapability capability={capabilityForPath('/settings/data-sources')}><DataSourcesPage /></RequireCapability>} />
 
                 {/* Full-page routes, outside any room */}
                 <Route path="/analysis/:symbol/:date" element={<AnalysisDetailPage />} />

@@ -49,6 +49,23 @@ _jwt_secret: str | None = None
 # core ships no organization, member, SSO, audit, seat or billing implementation,
 # and the strings are the interface that lets a private overlay add those pages
 # without inventing its own vocabulary.
+#
+# The first eleven strings are entirely about admin surfaces (organization,
+# membership, SSO, audit, seats, billing) and describe no product room of the
+# app itself. The nine appended after them name the product rooms the shell's
+# nav (frontend/src/components/shell/rooms.ts) actually gates:
+# watchlist/portfolio/paper/alerts (the Portfolio room and its tabs),
+# discover, agents/reports (the Agents room and its Reports tab), settings and
+# datasources (the Settings room and its Data Sources tab). All nine are
+# read-only by design -- there is no product-room ``:manage`` string -- so the
+# "manage implies read" invariant above is trivially satisfied by them.
+#
+# core is still single-operator, so it grants all nine unconditionally, the
+# same "always-true" reasoning as the original eleven: there is only ever one
+# operator here and they hold everything. A multi-tenant deployment (see
+# cloud/capabilities.py) grants a role-dependent SUBSET of these nine instead
+# -- it has no discovery, agent or report pipeline, so it never grants
+# ``discover:read``, ``agents:read`` or ``reports:read`` regardless of role.
 OPERATOR_CAPABILITIES: tuple[str, ...] = (
     "org:read",
     "org:manage",
@@ -61,6 +78,15 @@ OPERATOR_CAPABILITIES: tuple[str, ...] = (
     "seats:manage",
     "billing:read",
     "billing:manage",
+    "watchlist:read",
+    "portfolio:read",
+    "paper:read",
+    "alerts:read",
+    "discover:read",
+    "agents:read",
+    "reports:read",
+    "settings:read",
+    "datasources:read",
 )
 
 

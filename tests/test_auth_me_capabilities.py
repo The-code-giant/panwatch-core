@@ -27,6 +27,22 @@ EXPECTED_CAPABILITIES = {
     "billing:manage",
 }
 
+# 产品房间(frontend/src/components/shell/rooms.ts)依赖的能力名，按契约固定顺序
+# 追加在上面十一个之后。核心是单操作员部署，全部无条件授予；云端
+# (cloud/capabilities.py)按角色只授予其中一部分，且从不授予 discover:read /
+# agents:read / reports:read —— 云端没有对应的发现、Agent 或报告功能管线。
+PRODUCT_CAPABILITIES_IN_ORDER = (
+    "watchlist:read",
+    "portfolio:read",
+    "paper:read",
+    "alerts:read",
+    "discover:read",
+    "agents:read",
+    "reports:read",
+    "settings:read",
+    "datasources:read",
+)
+
 
 def _setup(monkeypatch):
     engine = create_engine(
@@ -66,6 +82,19 @@ def test_operator_capabilities_constant_is_named_tuple():
     for cap in caps:
         noun, verb = cap.split(":")
         assert noun and verb in {"read", "manage"}, cap
+
+
+def test_product_capabilities_are_appended_in_the_fixed_order_and_read_only():
+    """九个产品能力名紧跟在原有十一个之后，顺序固定，且全部是 :read（没有对应的 :manage）"""
+    caps = auth_module.OPERATOR_CAPABILITIES
+    assert caps[11:] == PRODUCT_CAPABILITIES_IN_ORDER
+    for cap in PRODUCT_CAPABILITIES_IN_ORDER:
+        assert cap.endswith(":read"), cap
+
+
+def test_core_grants_every_product_capability_always():
+    """核心单操作员部署：九个产品能力名全部、无条件出现在 OPERATOR_CAPABILITIES 中"""
+    assert set(PRODUCT_CAPABILITIES_IN_ORDER) <= set(auth_module.OPERATOR_CAPABILITIES)
 
 
 def test_me_guest_keeps_user_and_adds_capabilities(monkeypatch):
